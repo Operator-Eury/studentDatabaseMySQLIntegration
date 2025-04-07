@@ -19,7 +19,7 @@ public class dashboardFrame extends javax.swing.JFrame {
      */
     public dashboardFrame() {
         initComponents();
-        URL iconUrl = getClass().getResource("/resources/icoFiles/tabIcon.png");
+        URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
         ImageIcon logo = new ImageIcon(iconUrl);
         setIconImage(logo.getImage());   
     }
@@ -62,7 +62,7 @@ public class dashboardFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Student Database MySQL Integrated");
-        setMinimumSize(new java.awt.Dimension(850, 550));
+        setMinimumSize(new java.awt.Dimension(1050, 750));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         dashboardTabs.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -104,7 +104,7 @@ public class dashboardFrame extends javax.swing.JFrame {
         toggleFormButton.setMaximumSize(null);
         toggleFormButton.setMinimumSize(null);
         toggleFormButton.setOpaque(true);
-        toggleFormButton.setPreferredSize(null);
+        toggleFormButton.setPreferredSize(new java.awt.Dimension(180, 30));
         toggleFormButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/loading-arrow.png"))); // NOI18N
         toggleFormButton.setVerifyInputWhenFocusTarget(false);
         toggleFormButton.addItemListener(new java.awt.event.ItemListener() {

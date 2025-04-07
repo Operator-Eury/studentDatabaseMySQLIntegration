@@ -3,6 +3,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package javaForms;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+
 
 /**
  *
@@ -15,8 +26,50 @@ public class templateForms extends javax.swing.JPanel {
      */
     public templateForms() {
         initComponents();
+        applyIDFormat(idNumberField);
     }
+    
+    private void applyIDFormat(JTextField idNumberValue) {
+    ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+            String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
 
+            // Remove non-digit characters
+            newText = newText.replaceAll("[^\\d]", "");
+
+            // Limit to 8 digits only
+            newText = newText.substring(0, Math.min(newText.length(), 8));
+
+            // Auto-format with dash
+            if (newText.length() > 4) {
+                newText = newText.substring(0, 4) + "-" + newText.substring(4);
+            }
+
+            fb.replace(0, fb.getDocument().getLength(), newText, attrs);
+        }
+    });
+
+    // Ensure formatting when focus is lost
+    idNumberValue.addFocusListener(new FocusAdapter() {
+        @Override
+        public void focusLost(FocusEvent evt) {
+            formatID(idNumberValue);
+        }
+    });
+}
+    
+    private void formatID(JTextField field) {
+    String text = field.getText().replaceAll("[^\\d]", ""); // Remove non-digits
+    while (text.length() < 8) {
+        text = "0" + text; // Pad with leading zeros
+    }
+    field.setText(text.substring(0, 4) + "-" + text.substring(4));
+}
+
+
+ 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,6 +117,10 @@ public class templateForms extends javax.swing.JPanel {
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
         jSeparator6 = new javax.swing.JSeparator();
         formHeaderPanel = new javax.swing.JPanel();
+        // Resize the icon before setting it
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/resources/images/dog.png"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(128, 128, Image.SCALE_SMOOTH);
+        ImageIcon resizedIcon = new ImageIcon(scaledImage);
         formHeaderTitle = new javax.swing.JLabel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -76,23 +133,21 @@ public class templateForms extends javax.swing.JPanel {
         firstLineContent.setLayout(new java.awt.GridBagLayout());
 
         firstNameField.setBackground(new java.awt.Color(242, 242, 242));
+        firstNameField.setColumns(20);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         firstLineContent.add(firstNameField, gridBagConstraints);
 
         lastNameField.setBackground(new java.awt.Color(242, 242, 242));
+        lastNameField.setColumns(20);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         firstLineContent.add(lastNameField, gridBagConstraints);
@@ -125,12 +180,11 @@ public class templateForms extends javax.swing.JPanel {
         firstLineContent.add(lastNameLabel, gridBagConstraints);
 
         middleNameField.setBackground(new java.awt.Color(242, 242, 242));
+        middleNameField.setColumns(20);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         firstLineContent.add(middleNameField, gridBagConstraints);
@@ -285,6 +339,9 @@ public class templateForms extends javax.swing.JPanel {
         firstLineContent.add(idNumberLabel, gridBagConstraints);
 
         idNumberField.setBackground(new java.awt.Color(242, 242, 242));
+        idNumberField.setColumns(9);
+        idNumberField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        idNumberField.setText("0000-0000");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 9;
@@ -414,6 +471,7 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         formHeaderPanel.add(formHeaderTitle, gridBagConstraints);
+        formHeaderTitle.setIcon(resizedIcon); // NOI18N
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 0;
