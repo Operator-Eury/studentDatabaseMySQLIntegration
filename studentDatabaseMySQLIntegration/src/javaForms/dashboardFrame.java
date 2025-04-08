@@ -21,8 +21,10 @@ public class dashboardFrame extends javax.swing.JFrame {
         initComponents();
         URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
         ImageIcon logo = new ImageIcon(iconUrl);
-        setIconImage(logo.getImage());   
+        setIconImage(logo.getImage());
     }
+    
+     templateForms form = new templateForms();
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,17 +46,14 @@ public class dashboardFrame extends javax.swing.JFrame {
         studentInformationContainer.revalidate();
         enrollmentFormsContainer = new javax.swing.JPanel();
         formPanelHolder = new javax.swing.JPanel();
-        templateForms test = new templateForms();
-
-        formPanelHolder.removeAll();
-        formPanelHolder.add(test);
-        formPanelHolder.repaint();
-        formPanelHolder.revalidate();
         toggleFormsPanelHolder = new javax.swing.JPanel();
         toggleFormButton = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         managementContainer = new javax.swing.JPanel();
+        managementTabbedPanes = new javax.swing.JTabbedPane();
+        collegesContainer = new javax.swing.JPanel();
+        programsContainer = new javax.swing.JPanel();
         greetingPanel = new javax.swing.JPanel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
         greetingLabel = new javax.swing.JLabel();
@@ -83,7 +82,6 @@ public class dashboardFrame extends javax.swing.JFrame {
         enrollmentFormsContainer.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         enrollmentFormsContainer.setLayout(new java.awt.GridBagLayout());
 
-        formPanelHolder.setBackground(new java.awt.Color(255, 255, 0));
         formPanelHolder.setLayout(new java.awt.GridLayout(1, 0));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
@@ -91,6 +89,8 @@ public class dashboardFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
         enrollmentFormsContainer.add(formPanelHolder, gridBagConstraints);
+        formPanelHolder.add(form);
+        formPanelHolder.add(form);
 
         toggleFormsPanelHolder.setLayout(new java.awt.GridBagLayout());
 
@@ -110,6 +110,11 @@ public class dashboardFrame extends javax.swing.JFrame {
         toggleFormButton.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 toggleFormButtonItemStateChanged(evt);
+            }
+        });
+        toggleFormButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toggleFormButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -149,6 +154,39 @@ public class dashboardFrame extends javax.swing.JFrame {
         dashboardTabs.addTab("     Enrollment Forms     ", enrollmentFormsContainer);
 
         managementContainer.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        managementContainer.setLayout(new java.awt.GridBagLayout());
+
+        managementTabbedPanes.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        managementTabbedPanes.setTabPlacement(javax.swing.JTabbedPane.LEFT);
+        managementTabbedPanes.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        collegesContainer.setLayout(new java.awt.GridLayout(1, 0));
+        managementTabbedPanes.addTab("     Colleges     ", collegesContainer);
+        templatePaginatedTableForms collegeTable = new templatePaginatedTableForms();
+
+        collegesContainer.removeAll();
+        collegesContainer.add(collegeTable);
+        collegesContainer.repaint();
+        collegesContainer.revalidate();
+
+        programsContainer.setLayout(new java.awt.GridLayout(1, 0));
+        managementTabbedPanes.addTab("     Programs     ", programsContainer);
+        templatePaginatedTableForms programsTable = new templatePaginatedTableForms();
+
+        programsContainer.removeAll();
+        programsContainer.add(programsTable);
+        programsContainer.repaint();
+        programsContainer.revalidate();
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        managementContainer.add(managementTabbedPanes, gridBagConstraints);
+
         dashboardTabs.addTab("     College Management     ", managementContainer);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -200,6 +238,24 @@ public class dashboardFrame extends javax.swing.JFrame {
         toggleFormButton.repaint();
     }//GEN-LAST:event_toggleFormButtonItemStateChanged
 
+    private void toggleFormButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleFormButtonActionPerformed
+        // TODO add your handling code here:
+        if(!toggleFormButton.isSelected()){
+            form.formHeaderTitle.setText("LUPINBRIDGE UNIVERSITY ENROLLMENT FORM");
+            form.createButton.setText("Confirm Enrollment");
+            System.out.println("Not Selected now in Enrollment Mode");
+        } else {
+            form.formHeaderTitle.setText("LUPINBRIDGE UNIVERSITY STUDENT UPDATE FORM");
+            form.createButton.setText("Finalize Update");
+            System.out.println("Selected now in Update Mode");
+}
+
+        formPanelHolder.removeAll();
+        formPanelHolder.add(form);
+        formPanelHolder.repaint();
+        formPanelHolder.revalidate();
+    }//GEN-LAST:event_toggleFormButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -236,6 +292,7 @@ public class dashboardFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel collegesContainer;
     private javax.swing.JTabbedPane dashboardTabs;
     private javax.swing.JPanel enrollmentFormsContainer;
     private javax.swing.Box.Filler filler1;
@@ -246,6 +303,8 @@ public class dashboardFrame extends javax.swing.JFrame {
     private javax.swing.JPanel greetingPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel managementContainer;
+    private javax.swing.JTabbedPane managementTabbedPanes;
+    private javax.swing.JPanel programsContainer;
     private javax.swing.JPanel studentInformationContainer;
     private javax.swing.JToggleButton toggleFormButton;
     private javax.swing.JPanel toggleFormsPanelHolder;
