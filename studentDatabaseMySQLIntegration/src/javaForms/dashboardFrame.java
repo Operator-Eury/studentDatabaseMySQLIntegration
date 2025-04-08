@@ -68,11 +68,6 @@ public class dashboardFrame extends javax.swing.JFrame {
         dashboardTabs.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         dashboardTabs.setDoubleBuffered(true);
         dashboardTabs.setName(""); // NOI18N
-        dashboardTabs.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dashboardTabsMouseClicked(evt);
-            }
-        });
 
         studentInformationContainer.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         studentInformationContainer.setLayout(new java.awt.GridLayout(1, 0));
@@ -215,19 +210,6 @@ public class dashboardFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void dashboardTabsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dashboardTabsMouseClicked
-        // TODO add your handling code here:
-     
-        //if(dashboardTabs.getSelectedComponent() == studentInformationContainer){
-            //templatePaginatedTableForms table = new templatePaginatedTableForms();
-            
-            //studentInformationContainer.removeAll();
-            //studentInformationContainer.add(table);
-            //studentInformationContainer.repaint();
-            //studentInformationContainer.revalidate();
-        //}
-    }//GEN-LAST:event_dashboardTabsMouseClicked
-
     private void toggleFormButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_toggleFormButtonItemStateChanged
         // TODO add your handling code here:      
         toggleFormButton.setText(evt.getStateChange() == ItemEvent.SELECTED ? "Update Form" : "Enrollment Form");
@@ -243,10 +225,12 @@ public class dashboardFrame extends javax.swing.JFrame {
         if(!toggleFormButton.isSelected()){
             form.formHeaderTitle.setText("LUPINBRIDGE UNIVERSITY ENROLLMENT FORM");
             form.createButton.setText("Confirm Enrollment");
+            form.allowIdEdit.setVisible(false);
             System.out.println("Not Selected now in Enrollment Mode");
         } else {
             form.formHeaderTitle.setText("LUPINBRIDGE UNIVERSITY STUDENT UPDATE FORM");
             form.createButton.setText("Finalize Update");
+            form.allowIdEdit.setVisible(true);
             System.out.println("Selected now in Update Mode");
 }
 

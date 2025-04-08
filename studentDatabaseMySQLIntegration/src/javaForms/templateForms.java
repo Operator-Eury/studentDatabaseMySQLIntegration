@@ -102,10 +102,12 @@ public class templateForms extends javax.swing.JPanel {
         selectedCollegeLabel = new javax.swing.JLabel();
         selectedProgramLabel = new javax.swing.JLabel();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        idNumberLabel = new javax.swing.JLabel();
-        idNumberField = new javax.swing.JTextField();
         filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        secondLinePanelHolder = new javax.swing.JPanel();
+        idNumberLabel = new javax.swing.JLabel();
+        idNumberField = new javax.swing.JTextField();
+        allowIdEdit = new javax.swing.JCheckBox();
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         formLowerPanel = new javax.swing.JPanel();
         discardButton = new javax.swing.JButton();
@@ -328,28 +330,6 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.ipady = 5;
         gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
         firstLineContent.add(filler3, gridBagConstraints);
-
-        idNumberLabel.setText("ID Number:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        firstLineContent.add(idNumberLabel, gridBagConstraints);
-
-        idNumberField.setBackground(new java.awt.Color(242, 242, 242));
-        idNumberField.setColumns(9);
-        idNumberField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        idNumberField.setText("0000-0000");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        firstLineContent.add(idNumberField, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -365,6 +345,48 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 0.1;
         firstLineContent.add(filler8, gridBagConstraints);
+
+        secondLinePanelHolder.setOpaque(false);
+        secondLinePanelHolder.setLayout(new java.awt.GridBagLayout());
+
+        idNumberLabel.setText("ID Number:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        secondLinePanelHolder.add(idNumberLabel, gridBagConstraints);
+
+        idNumberField.setBackground(new java.awt.Color(242, 242, 242));
+        idNumberField.setColumns(9);
+        idNumberField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        idNumberField.setText("0000-0000");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        secondLinePanelHolder.add(idNumberField, gridBagConstraints);
+
+        allowIdEdit.setText("Update Student ID");
+        allowIdEdit.setToolTipText("Toggles between selecting students through their ID Numbers or Updating the selected student's ID Number");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        secondLinePanelHolder.add(allowIdEdit, gridBagConstraints);
+        allowIdEdit.setVisible(false);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        firstLineContent.add(secondLinePanelHolder, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -487,7 +509,8 @@ public class templateForms extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> collegeComboBox;
+    protected javax.swing.JCheckBox allowIdEdit;
+    protected javax.swing.JComboBox<String> collegeComboBox;
     protected javax.swing.JLabel collegeNameLabel;
     protected javax.swing.JButton createButton;
     protected javax.swing.JButton discardButton;
@@ -506,11 +529,11 @@ public class templateForms extends javax.swing.JPanel {
     protected javax.swing.JPanel formHeaderPanel;
     protected javax.swing.JLabel formHeaderTitle;
     protected javax.swing.JPanel formLowerPanel;
-    private javax.swing.JComboBox<String> genderComboBox;
+    protected javax.swing.JComboBox<String> genderComboBox;
     protected javax.swing.JLabel genderLabel;
     protected javax.swing.JTextField idNumberField;
     protected javax.swing.JLabel idNumberLabel;
-    private javax.swing.JComboBox<String> jComboBox1;
+    protected javax.swing.JComboBox<String> jComboBox1;
     protected javax.swing.JSeparator jSeparator2;
     protected javax.swing.JSeparator jSeparator3;
     protected javax.swing.JSeparator jSeparator4;
@@ -520,8 +543,9 @@ public class templateForms extends javax.swing.JPanel {
     protected javax.swing.JLabel lastNameLabel;
     protected javax.swing.JTextField middleNameField;
     protected javax.swing.JLabel middleNameLabel;
-    private javax.swing.JComboBox<String> programComboBox;
+    protected javax.swing.JComboBox<String> programComboBox;
     protected javax.swing.JLabel programNameLabel;
+    protected javax.swing.JPanel secondLinePanelHolder;
     protected javax.swing.JLabel selectedCollegeLabel;
     protected javax.swing.JLabel selectedProgramLabel;
     protected javax.swing.JLabel yearLevelLabel;
