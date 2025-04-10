@@ -29,6 +29,20 @@ public class templateForms extends javax.swing.JPanel {
         applyIDFormat(idNumberField);
     }
     
+    //setters
+    public void setFormHeaderTitle(String text) {
+        formHeaderTitle.setText(text);
+    }
+    
+    public void setCreateButton (String text) {
+        createButton.setText(text);
+    }
+    
+    //getters
+    public javax.swing.JCheckBox getAllowIdEdit() {
+        return allowIdEdit;
+    }
+    
     private void applyIDFormat(JTextField idNumberValue) {
     ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
         @Override
@@ -362,6 +376,7 @@ public class templateForms extends javax.swing.JPanel {
         idNumberField.setColumns(9);
         idNumberField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         idNumberField.setText("0000-0000");
+        idNumberField.setMinimumSize(new java.awt.Dimension(113, 22));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -376,14 +391,13 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         secondLinePanelHolder.add(allowIdEdit, gridBagConstraints);
         allowIdEdit.setVisible(false);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 9;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 0.1;
         firstLineContent.add(secondLinePanelHolder, gridBagConstraints);

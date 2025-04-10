@@ -2,6 +2,7 @@ import javaForms.dashboardFrame;
 import javax.swing.*;
 import com.formdev.flatlaf.FlatIntelliJLaf; 
 import java.awt.Font;
+import mySQLQueries.databaseConnector;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,6 +13,7 @@ public class Main {
         // Set Global Font
             Font currentFont = UIManager.getFont("defaultFont"); // FlatLaf uses "defaultFont"
             Font newFontSize = currentFont.deriveFont(16f);
+            Font tableFontSize = currentFont.deriveFont(18f);
 
             // Apply font settings to specific components (for compatibility)
             UIManager.put("Button.font", newFontSize);
@@ -19,8 +21,8 @@ public class Main {
             UIManager.put("TextField.font", newFontSize);
             UIManager.put("TextArea.font", newFontSize);
             UIManager.put("ComboBox.font", newFontSize);
-            UIManager.put("Table.font", newFontSize);
-            UIManager.put("TableHeader.font", newFontSize);
+            UIManager.put("Table.font", tableFontSize);
+            UIManager.put("TableHeader.font", tableFontSize);
             UIManager.put("TextPane.font", newFontSize);
             UIManager.put("EditorPane.font", newFontSize);
             UIManager.put("PasswordField.font", newFontSize);
@@ -37,10 +39,20 @@ public class Main {
 
         // Force UI Update
         SwingUtilities.invokeLater(() -> {
-            dashboardFrame frame = new dashboardFrame();
-            SwingUtilities.updateComponentTreeUI(frame); // Forces all components to update
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            dashboardFrame mainFrame = new dashboardFrame();
+            SwingUtilities.updateComponentTreeUI(mainFrame); // Forces all components to update
+            mainFrame.setLocationRelativeTo(null);
+            mainFrame.setVisible(true);
         });
+        
+        var conn = databaseConnector.getConnection(); 
+          
+            if (conn != null) {
+            // Use the connection for queries
+            System.out.println("Connected to the database!");
+        } else {
+            System.err.println("Failed to connect to the database.");
+        }
+    
     }
 }

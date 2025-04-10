@@ -4,6 +4,19 @@
  */
 package javaForms;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+
 /**
  *
  * @author John-Ronan Beira
@@ -15,9 +28,117 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
      */
     public templatePaginatedTableForms() {
         initComponents();
+        centerTable();
+        setupEscapeKeyToClearSelection(templateTable);
+
     }
-    
-    
+
+    private void setupEscapeKeyToClearSelection(JTable table) {
+        InputMap inputMap = table.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = table.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "clearSelection");
+
+        actionMap.put("clearSelection", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                table.clearSelection();
+                
+                if (table.isEditing()) {
+                    table.getCellEditor().cancelCellEditing();
+                }
+                
+                table.getParent().requestFocusInWindow();
+                
+            }
+        });
+    }
+
+    protected void centerTable() {
+        TableCellRenderer centerAndStripeRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+
+                // Center text
+                setHorizontalAlignment(CENTER);
+
+                // Apply alternating row colors
+                if (!isSelected) {
+                    c.setBackground((row % 2 == 0)
+                            ? new Color(225, 250, 245)
+                            : new Color(220, 235, 250));
+                } else {
+                    c.setBackground(table.getSelectionBackground());
+                }
+
+                return c;
+            }
+        };
+
+        for (int i = 0; i < templateTable.getColumnCount(); i++) {
+            templateTable.getColumnModel().getColumn(i)
+                    .setCellRenderer(centerAndStripeRenderer);
+        }
+    }
+
+    // Setters
+    public void setCounterLabel(String text) {
+        counterLabel.setText(text);
+    }
+
+    public void setTotalPageLabel(String text) {
+        totalPageLabel.setText(text);
+    }
+
+    public void setUpdateButton(String text) {
+        updateButton.setText(text);
+    }
+
+    public void setCreateButton(String text) {
+        createButton.setText(text);
+    }
+
+    // Getters
+    public String getCounterLabel() {
+        return counterLabel.getText();
+    }
+
+    public javax.swing.JLabel getTotalPageLabel() {
+        return totalPageLabel;
+    }
+
+    public javax.swing.JButton getUpdateButton() {
+        return updateButton;
+    }
+
+    public javax.swing.JButton getCreateButton() {
+        return createButton;
+    }
+
+    public javax.swing.JTable getTemplateTable() {
+        return templateTable;
+    }
+
+    public javax.swing.JComboBox getGroupOptionsComboBox() {
+        return groupOptionsComboBox;
+    }
+
+    public javax.swing.JComboBox getSortingArrangements() {
+        return sortingArrangements;
+    }
+
+    public javax.swing.JComboBox getPageSelector() {
+        return pageSelector;
+    }
+
+    public javax.swing.JTextField getSearchInputField() {
+        return searchInputField;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,9 +152,9 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
 
         operationsPanel = new javax.swing.JPanel();
         sortByOptions = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        groupOptionsComboBox = new javax.swing.JComboBox<>();
         sortOptions = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        sortingArrangements = new javax.swing.JComboBox<>();
         searchInput = new javax.swing.JLabel();
         searchInputField = new javax.swing.JTextField();
         jSeparator5 = new javax.swing.JSeparator();
@@ -78,11 +199,11 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         operationsPanel.add(sortByOptions, gridBagConstraints);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Group Options" }));
+        groupOptionsComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Group Options" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
-        operationsPanel.add(jComboBox1, gridBagConstraints);
+        operationsPanel.add(groupOptionsComboBox, gridBagConstraints);
 
         sortOptions.setText("Sort By:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -90,22 +211,24 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         operationsPanel.add(sortOptions, gridBagConstraints);
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ascending", "Descending" }));
+        sortingArrangements.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ascending", "Descending" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;
         gridBagConstraints.gridy = 0;
-        operationsPanel.add(jComboBox2, gridBagConstraints);
+        operationsPanel.add(sortingArrangements, gridBagConstraints);
 
         searchInput.setText("Search:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 10;
         gridBagConstraints.gridy = 0;
         operationsPanel.add(searchInput, gridBagConstraints);
+
+        searchInputField.setColumns(9);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 12;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.weightx = 0.2;
         operationsPanel.add(searchInputField, gridBagConstraints);
 
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -148,7 +271,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.gridx = 13;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.weightx = 0.1;
         operationsPanel.add(filler3, gridBagConstraints);
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -171,14 +294,15 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
 
         templateTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "HEADER 1", "HEADER 2", "HEADER 3", "HEADER 4", "HEADER  5", "HEADER 6", "HEADER 7"
+                "HEADER 1", "HEADER 2", "HEADER 3", "HEADER 4", "HEADER  5", "HEADER 6", "HEADER 7", "HEADER 8"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -186,10 +310,15 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
             }
         });
         templateTable.setFillsViewportHeight(true);
-        templateTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        templateTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         templateTable.setShowGrid(true);
         templateTable.getTableHeader().setResizingAllowed(false);
         templateTable.getTableHeader().setReorderingAllowed(false);
+        templateTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                templateTableFocusLost(evt);
+            }
+        });
         templateScrollPanel.setViewportView(templateTable);
         templateTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
@@ -251,11 +380,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         createButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/add.png"))); // NOI18N
         createButton.setText("createButton");
         createButton.setDoubleBuffered(true);
-        createButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createButtonActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 13;
         gridBagConstraints.gridy = 1;
@@ -268,11 +392,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         contextOperationsPanel.add(currentPageLabel, gridBagConstraints);
 
         pageSelector.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1" }));
-        pageSelector.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pageSelectorActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 1;
@@ -332,15 +451,10 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         add(contextOperationsPanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
+    private void templateTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_templateTableFocusLost
         // TODO add your handling code here:
-    }//GEN-LAST:event_createButtonActionPerformed
-
-    private void pageSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pageSelectorActionPerformed
-        // TODO add your handling code here:
-         String selectedPage = (String) pageSelector.getSelectedItem();
-         int currentPage = Integer.parseInt(selectedPage);
-    }//GEN-LAST:event_pageSelectorActionPerformed
+        templateTable.clearSelection();
+    }//GEN-LAST:event_templateTableFocusLost
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -351,8 +465,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.Box.Filler filler1;
     protected javax.swing.Box.Filler filler2;
     protected javax.swing.Box.Filler filler3;
-    protected javax.swing.JComboBox<String> jComboBox1;
-    protected javax.swing.JComboBox<String> jComboBox2;
+    protected javax.swing.JComboBox<String> groupOptionsComboBox;
     protected javax.swing.JSeparator jSeparator1;
     protected javax.swing.JSeparator jSeparator13;
     protected javax.swing.JSeparator jSeparator14;
@@ -376,6 +489,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.JTextField searchInputField;
     protected javax.swing.JLabel sortByOptions;
     protected javax.swing.JLabel sortOptions;
+    protected javax.swing.JComboBox<String> sortingArrangements;
     protected javax.swing.JScrollPane templateScrollPanel;
     protected javax.swing.JTable templateTable;
     protected javax.swing.JLabel totalPageLabel;
