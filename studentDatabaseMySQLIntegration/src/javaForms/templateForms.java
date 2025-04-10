@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package javaForms;
+
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import javax.swing.JTextField;
@@ -12,8 +13,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-
-
 
 /**
  *
@@ -28,62 +27,60 @@ public class templateForms extends javax.swing.JPanel {
         initComponents();
         applyIDFormat(idNumberField);
     }
-    
+
     //setters
     public void setFormHeaderTitle(String text) {
         formHeaderTitle.setText(text);
     }
-    
-    public void setCreateButton (String text) {
+
+    public void setCreateButton(String text) {
         createButton.setText(text);
     }
-    
+
     //getters
     public javax.swing.JCheckBox getAllowIdEdit() {
         return allowIdEdit;
     }
-    
+
     private void applyIDFormat(JTextField idNumberValue) {
-    ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
-        @Override
-        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-            String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-            String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+        ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
 
-            // Remove non-digit characters
-            newText = newText.replaceAll("[^\\d]", "");
+                // Remove non-digit characters
+                newText = newText.replaceAll("[^\\d]", "");
 
-            // Limit to 8 digits only
-            newText = newText.substring(0, Math.min(newText.length(), 8));
+                // Limit to 8 digits only
+                newText = newText.substring(0, Math.min(newText.length(), 8));
 
-            // Auto-format with dash
-            if (newText.length() > 4) {
-                newText = newText.substring(0, 4) + "-" + newText.substring(4);
+                // Auto-format with dash
+                if (newText.length() > 4) {
+                    newText = newText.substring(0, 4) + "-" + newText.substring(4);
+                }
+
+                fb.replace(0, fb.getDocument().getLength(), newText, attrs);
             }
+        });
 
-            fb.replace(0, fb.getDocument().getLength(), newText, attrs);
-        }
-    });
-
-    // Ensure formatting when focus is lost
-    idNumberValue.addFocusListener(new FocusAdapter() {
-        @Override
-        public void focusLost(FocusEvent evt) {
-            formatID(idNumberValue);
-        }
-    });
-}
-    
-    private void formatID(JTextField field) {
-    String text = field.getText().replaceAll("[^\\d]", ""); // Remove non-digits
-    while (text.length() < 8) {
-        text = "0" + text; // Pad with leading zeros
+        // Ensure formatting when focus is lost
+        idNumberValue.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent evt) {
+                formatID(idNumberValue);
+            }
+        });
     }
-    field.setText(text.substring(0, 4) + "-" + text.substring(4));
-}
 
+    private void formatID(JTextField field) {
+        String text = field.getText().replaceAll("[^\\d]", ""); // Remove non-digits
+        while (text.length() < 8) {
+            text = "0" + text; // Pad with leading zeros
+        }
+        field.setText(text.substring(0, 4) + "-" + text.substring(4));
+    }
 
- 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

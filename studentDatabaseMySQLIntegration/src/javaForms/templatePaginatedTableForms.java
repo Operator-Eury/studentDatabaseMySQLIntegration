@@ -42,15 +42,15 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         actionMap.put("clearSelection", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 table.clearSelection();
-                
+
                 if (table.isEditing()) {
                     table.getCellEditor().cancelCellEditing();
                 }
-                
+
                 table.getParent().requestFocusInWindow();
-                
+
             }
         });
     }
@@ -292,6 +292,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         templateScrollPanel.setToolTipText("");
         templateScrollPanel.setDoubleBuffered(true);
 
+        templateTable.setFont(templateTable.getFont());
         templateTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},

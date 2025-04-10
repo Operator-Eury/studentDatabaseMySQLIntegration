@@ -30,22 +30,15 @@ public class studentTable {
     private String searchText = studentTable.getSearchInputField().getText().trim();
 
     public void startComponents() {
-
         fillTable();
-
         setCounter();
-
         getTotalPages();
-
         pageSelectorComboBox();
-
         studentTable.getTemplateTable().getTableHeader().repaint();
-
     }
 
     public templatePaginatedTableForms showTable() {
 
-        studentTable.setCounterLabel("counterLabels");
         studentTable.setUpdateButton("Update Student");
         studentTable.setCreateButton("Enroll Student");
 
@@ -90,7 +83,7 @@ public class studentTable {
             studentTable.getTemplateTable().clearSelection();
             studentTable.getTemplateTable().repaint();
             studentTable.getTemplateTable().revalidate();
-            
+
         });
 
         studentTable.getPageSelector().addItemListener((ItemEvent e) -> {
@@ -102,6 +95,7 @@ public class studentTable {
 
                         if (searchText.isEmpty()) {
                             sortSettings();
+                            System.out.println("Activated");
                         } else {
                             fetchSearchPage(searchText, currentPage, rowsPerPage);
                         }
@@ -295,7 +289,7 @@ public class studentTable {
 
         int totalRows = getTotalRows();
         int totalPages = (int) Math.ceil(totalRows / (double) rowsPerPage);
-        studentTable.setTotalPageLabel(String.valueOf(totalPages));
+        studentTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
 
         return totalPages;
     }
@@ -415,9 +409,9 @@ public class studentTable {
                         + "FROM studentTable sT "
                         + "JOIN collegesTable cT ON sT.collegeCode = cT.collegeCode "
                         + "JOIN programsTable pT ON sT.programCode = pT.programCode "
-                        + "WHERE sT.firstName LIKE ? OR sT.lastName LIKE ? OR sT.idNumber LIKE ? OR "
-                        + "pT.programName LIKE ? OR cT.collegeName LIKE ? OR sT.collegeCode LIKE ? OR "
-                        + "sT.programCode LIKE ? OR sT.gender = ? "
+                        + "WHERE sT.firstName LIKE ? OR sT.lastName LIKE ? OR sT.middleName LIKE ? OR "
+                        + "sT.idNumber LIKE ? OR pT.programName LIKE ? OR cT.collegeName LIKE ? OR "
+                        + "sT.collegeCode LIKE ? OR sT.programCode LIKE ? OR sT.gender = ? "
                         + "LIMIT " + rowsPerPage + " OFFSET " + offset;
             }
         } else if (isNumeric) {
@@ -426,7 +420,7 @@ public class studentTable {
                     + "FROM studentTable sT "
                     + "JOIN collegesTable cT ON sT.collegeCode = cT.collegeCode "
                     + "JOIN programsTable pT ON sT.programCode = pT.programCode "
-                    + "WHERE sT.yearLevel = ? OR sT.idNumber LIKE ? "
+                    + "WHERE sT.yearLevel = ? OR sT.idNumber LIKE ? OR sT.middleName LIKE ? "
                     + "LIMIT " + rowsPerPage + " OFFSET " + offset;
         } else {
             query = "SELECT sT.idNumber, sT.firstName, sT.middleName, sT.lastName, "
@@ -434,44 +428,45 @@ public class studentTable {
                     + "FROM studentTable sT "
                     + "JOIN collegesTable cT ON sT.collegeCode = cT.collegeCode "
                     + "JOIN programsTable pT ON sT.programCode = pT.programCode "
-                    + "WHERE sT.firstName LIKE ? OR sT.lastName LIKE ? OR sT.idNumber LIKE ? OR "
-                    + "pT.programName LIKE ? OR cT.collegeName LIKE ? OR sT.collegeCode LIKE ? OR "
-                    + "sT.programCode LIKE ? OR sT.gender = ? "
+                    + "WHERE sT.firstName LIKE ? OR sT.lastName LIKE ? OR sT.middleName LIKE ? OR "
+                    + "sT.idNumber LIKE ? OR pT.programName LIKE ? OR cT.collegeName LIKE ? OR "
+                    + "sT.collegeCode LIKE ? OR sT.programCode LIKE ? OR sT.gender = ? "
                     + "LIMIT " + rowsPerPage + " OFFSET " + offset;
         }
 
         DefaultTableModel model = (DefaultTableModel) studentTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
-        try (PreparedStatement ps = connectionAttempt.prepareStatement(query)) {
+        try (PreparedStatement createPreparedStatement = connectionAttempt.prepareStatement(query)) {
             if (isFullId) {
-                ps.setString(1, searchText);
+                createPreparedStatement.setString(1, searchText);
             } else if (isSingleDigit) {
                 int searchDigit = Integer.parseInt(searchText);
                 if (searchDigit > 4) {
-                    ps.setString(1, "%" + searchText + "%"); // partial idNumber match
+                    createPreparedStatement.setString(1, "%" + searchText + "%"); 
                 } else if (searchDigit > 0) {
-                    ps.setInt(1, searchDigit); // yearLevel
+                    createPreparedStatement.setInt(1, searchDigit); 
                 } else {
-                    // Treat as non-numeric query if 0
+                    
                     String pattern = "%" + searchText + "%";
-                    for (int i = 1; i <= 7; i++) {
-                        ps.setString(i, pattern);
+                    for (int i = 1; i <= 8; i++) { 
+                        createPreparedStatement.setString(i, pattern);
                     }
-                    ps.setString(8, searchText); // exact match for gender
+                    createPreparedStatement.setString(9, searchText);
                 }
             } else if (isNumeric) {
-                ps.setString(1, searchText); // yearLevel
-                ps.setString(2, "%" + searchText + "%"); // partial idNumber match
+                createPreparedStatement.setString(1, searchText);
+                createPreparedStatement.setString(2, "%" + searchText + "%"); 
+                createPreparedStatement.setString(3, "%" + searchText + "%"); 
             } else {
                 String pattern = "%" + searchText + "%";
-                for (int i = 1; i <= 7; i++) {
-                    ps.setString(i, pattern);
+                for (int i = 1; i <= 8; i++) {
+                    createPreparedStatement.setString(i, pattern);
                 }
-                ps.setString(8, searchText); // exact match for gender
+                createPreparedStatement.setString(9, searchText); 
             }
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = createPreparedStatement.executeQuery()) {
                 while (rs.next()) {
                     model.addRow(new Object[]{
                         rs.getString("idNumber"),

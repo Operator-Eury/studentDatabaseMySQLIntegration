@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package javaForms;
+import functions.programsTable;
 import java.net.URL;
 import javax.swing.*;
 import functions.studentTable;
@@ -47,6 +48,7 @@ public class dashboardFrame extends javax.swing.JFrame {
         return instance;
     }
     
+    programsTable programsTableForm = new programsTable();
     studentTable studentTableForm = new studentTable();
     studentForm studentEnrollmentForm = new studentForm();
     
@@ -103,16 +105,15 @@ public class dashboardFrame extends javax.swing.JFrame {
         enrollmentFormsContainer.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         enrollmentFormsContainer.setLayout(new java.awt.GridBagLayout());
 
-        formPanelHolder.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-                formPanelHolderAncestorAdded(evt);
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
         formPanelHolder.setLayout(new java.awt.GridLayout(1, 0));
+
+        formPanelHolder.removeAll();
+
+        formPanelHolder.add(studentEnrollmentForm.showForm());
+
+        formPanelHolder.repaint();
+        formPanelHolder.revalidate();
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -135,16 +136,6 @@ public class dashboardFrame extends javax.swing.JFrame {
         toggleFormButton.setPreferredSize(new java.awt.Dimension(180, 30));
         toggleFormButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/loading-arrow.png"))); // NOI18N
         toggleFormButton.setVerifyInputWhenFocusTarget(false);
-        toggleFormButton.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                toggleFormButtonItemStateChanged(evt);
-            }
-        });
-        toggleFormButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toggleFormButtonActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -199,10 +190,10 @@ public class dashboardFrame extends javax.swing.JFrame {
 
         programsContainer.setLayout(new java.awt.GridLayout(1, 0));
         managementTabbedPanes.addTab("     Programs     ", programsContainer);
-        templatePaginatedTableForms programsTable = new templatePaginatedTableForms();
-
         programsContainer.removeAll();
-        programsContainer.add(programsTable);
+
+        programsContainer.add(programsTableForm.showTable());
+
         programsContainer.repaint();
         programsContainer.revalidate();
 
@@ -242,46 +233,6 @@ public class dashboardFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void toggleFormButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_toggleFormButtonItemStateChanged
-        // TODO add your handling code here:      
-        toggleFormButton.setText(evt.getStateChange() == ItemEvent.SELECTED ? "Update Form" : "Enrollment Form");
-        toggleFormButton.setBackground(evt.getStateChange() == ItemEvent.SELECTED ? new Color(0, 180, 255) : new Color(153, 255, 153));
-        toggleFormButton.setForeground(evt.getStateChange() == ItemEvent.SELECTED ? Color.WHITE : Color.BLACK);
-    
-        toggleFormButton.revalidate();
-        toggleFormButton.repaint();
-    }//GEN-LAST:event_toggleFormButtonItemStateChanged
-
-    private void toggleFormButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleFormButtonActionPerformed
-        // TODO add your handling code here:
-        if(!toggleFormButton.isSelected()){
-            formPanelHolder.removeAll();
-            
-            System.out.println("Not Selected now in Enrollment Mode");
-            formPanelHolder.add(studentEnrollmentForm.showForm());
-            formPanelHolder.repaint();
-            formPanelHolder.revalidate();
-            
-            
-        } else {
-            formPanelHolder.removeAll();
-            
-            System.out.println("Selected now in Update Mode");
-            formPanelHolder.add(studentEnrollmentForm.showForm());
-            formPanelHolder.repaint();
-            formPanelHolder.revalidate();
-}
-    }//GEN-LAST:event_toggleFormButtonActionPerformed
-
-    private void formPanelHolderAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_formPanelHolderAncestorAdded
-        // TODO add your handling code here:
-            formPanelHolder.removeAll();
-            
-            formPanelHolder.add(studentEnrollmentForm.showForm());
-            formPanelHolder.repaint();
-            formPanelHolder.revalidate();
-    }//GEN-LAST:event_formPanelHolderAncestorAdded
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel collegesContainer;
