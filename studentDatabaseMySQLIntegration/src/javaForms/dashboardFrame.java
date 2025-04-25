@@ -3,9 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package javaForms;
-import functions.programsTable;
+
 import java.net.URL;
 import javax.swing.*;
+import functions.collegesTable;
+import functions.programsTable;
 import functions.studentTable;
 import functions.studentForm;
 
@@ -13,8 +15,6 @@ import functions.studentForm;
  *
  * @author John-Ronan Beira
  */
-import java.awt.Color;
-import java.awt.event.ItemEvent;
 
 public class dashboardFrame extends javax.swing.JFrame {
 
@@ -48,12 +48,11 @@ public class dashboardFrame extends javax.swing.JFrame {
         return instance;
     }
     
+    collegesTable collegesTableForm = new collegesTable();
     programsTable programsTableForm = new programsTable();
     studentTable studentTableForm = new studentTable();
     studentForm studentEnrollmentForm = new studentForm();
-    
-    templateForms form = new templateForms();
-    
+        
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -181,10 +180,10 @@ public class dashboardFrame extends javax.swing.JFrame {
 
         collegesContainer.setLayout(new java.awt.GridLayout(1, 0));
         managementTabbedPanes.addTab("     Colleges     ", collegesContainer);
-        templatePaginatedTableForms collegeTable = new templatePaginatedTableForms();
-
         collegesContainer.removeAll();
-        collegesContainer.add(collegeTable);
+
+        collegesContainer.add(collegesTableForm.showTable());
+
         collegesContainer.repaint();
         collegesContainer.revalidate();
 

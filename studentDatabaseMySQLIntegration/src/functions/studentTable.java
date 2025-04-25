@@ -53,13 +53,28 @@ public class studentTable {
 
         TableColumnModel columnModel = studentTable.getTemplateTable().getColumnModel();
         columnModel.getColumn(0).setHeaderValue("ID Number");
+        columnModel.getColumn(0).setPreferredWidth(10); 
+        
         columnModel.getColumn(1).setHeaderValue("First Name");
+        columnModel.getColumn(1).setPreferredWidth(50); 
+        
         columnModel.getColumn(2).setHeaderValue("Middle Name");
+        columnModel.getColumn(2).setPreferredWidth(50); 
+        
         columnModel.getColumn(3).setHeaderValue("Last Name");
+        columnModel.getColumn(3).setPreferredWidth(50); 
+        
         columnModel.getColumn(4).setHeaderValue("Gender");
+        columnModel.getColumn(4).setPreferredWidth(10); 
+        
         columnModel.getColumn(5).setHeaderValue("Year Level");
+        columnModel.getColumn(5).setPreferredWidth(10); 
+        
         columnModel.getColumn(6).setHeaderValue("College Name");
+        columnModel.getColumn(6).setPreferredWidth(150); 
+        
         columnModel.getColumn(7).setHeaderValue("Program Name");
+        columnModel.getColumn(7).setPreferredWidth(250); 
 
         startComponents();
 
@@ -135,29 +150,7 @@ public class studentTable {
         model.setRowCount(0);
 
         if (connectionAttempt != null) {
-            try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(
-                    "SELECT sT.idNumber, sT.firstName, sT.middleName, sT.lastName, sT.gender, sT.yearLevel, cT.collegeName, pT.programName"
-                    + " FROM studentTable sT"
-                    + " JOIN collegesTable cT ON sT.collegeCode = cT.collegeCode"
-                    + " JOIN programsTable pT ON sT.programCode = pT.programCode"
-                    + " LIMIT " + rowsPerPage
-                    + " OFFSET " + (currentPage - 1) * rowsPerPage)) {
-
-                while (createResult.next()) {
-                    String idNumber = createResult.getString("idNumber");
-                    String firstName = createResult.getString("firstName");
-                    String middleName = createResult.getString("middleName");
-                    String lastName = createResult.getString("lastName");
-                    String gender = createResult.getString("gender");
-                    String yearLevel = createResult.getString("yearLevel");
-                    String collegeName = createResult.getString("collegeName");
-                    String programName = createResult.getString("programName");
-
-                    model.addRow(new Object[]{idNumber, firstName, middleName, lastName, gender, yearLevel, collegeName, programName});
-                }
-            } catch (SQLException error) {
-                System.err.println("SQL Error: " + error.getMessage());
-            }
+            sortSettings();
         } else {
             System.err.println("Failed to connect to the database.");
         }
@@ -308,7 +301,7 @@ public class studentTable {
             totalPages = 1;
         }
 
-        studentTable.setTotalPageLabel(String.valueOf(totalPages));
+        studentTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
 
         studentTable.getPageSelector().removeAllItems();
         for (int i = 1; i <= totalPages; i++) {

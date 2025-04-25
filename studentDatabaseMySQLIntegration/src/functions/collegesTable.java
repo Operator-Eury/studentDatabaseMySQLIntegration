@@ -6,10 +6,10 @@ package functions;
 
 import java.awt.event.ItemEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import javaForms.templatePaginatedTableForms;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -21,13 +21,13 @@ import mySQLQueries.databaseConnector;
  *
  * @author John-Ronan Beira
  */
-public class programsTable {
+public class collegesTable {
 
     private int startingPage = 1;
     private static final int rowsPerPage = 45;
-    templatePaginatedTableForms programsTable = new templatePaginatedTableForms();
+    templatePaginatedTableForms collegeTable = new templatePaginatedTableForms();
 
-    private String searchText = programsTable.getSearchInputField().getText().trim();
+    private String searchText = collegeTable.getSearchInputField().getText().trim();
 
     Connection connectionAttempt = databaseConnector.getConnection();
 
@@ -36,45 +36,42 @@ public class programsTable {
         sortSettings();
         getTotalPages();
         pageSelectorComboBox();
-        programsTable.getTemplateTable().getTableHeader().repaint();
+        collegeTable.getTemplateTable().getTableHeader().repaint();
     }
 
     public templatePaginatedTableForms showTable() {
 
-        programsTable.setUpdateButton("Update Program");
-        programsTable.setCreateButton("Register Program");
+        collegeTable.setUpdateButton("Update College");
+        collegeTable.setCreateButton("Register College");
 
-        programsTable.getGroupOptionsComboBox().removeAllItems();
-        programsTable.getGroupOptionsComboBox().addItem("Program Name");
-        programsTable.getGroupOptionsComboBox().addItem("Program Code");
+        collegeTable.getGroupOptionsComboBox().removeAllItems();
+        collegeTable.getGroupOptionsComboBox().addItem("College Name");
+        collegeTable.getGroupOptionsComboBox().addItem("College Code");
 
-        TableColumnModel columnModel = programsTable.getTemplateTable().getColumnModel();
+        TableColumnModel columnModel = collegeTable.getTemplateTable().getColumnModel();
 
         int columnCount = columnModel.getColumnCount();
-        for (int i = columnCount - 1; i >= 3; i--) {
+        for (int i = columnCount - 1; i >= 2; i--) {
             columnModel.removeColumn(columnModel.getColumn(i));
         }
 
-        columnModel.getColumn(0).setHeaderValue("Program Code");
+        columnModel.getColumn(0).setHeaderValue("College Code");
         columnModel.getColumn(0).setPreferredWidth(10);
 
-        columnModel.getColumn(1).setHeaderValue("Program Name");
+        columnModel.getColumn(1).setHeaderValue("College Name");
         columnModel.getColumn(1).setPreferredWidth(150);
-
-        columnModel.getColumn(2).setHeaderValue("College Name");
-        columnModel.getColumn(2).setPreferredWidth(150);
 
         startComponents();
 
-        programsTable.getSortingArrangements().addItemListener(e -> {
+        collegeTable.getSortingArrangements().addItemListener(e -> {
             sortSettings();
         });
 
-        programsTable.getGroupOptionsComboBox().addItemListener(e -> {
+        collegeTable.getGroupOptionsComboBox().addItemListener(e -> {
             sortSettings();
         });
 
-        programsTable.getPageSelector().addItemListener((ItemEvent e) -> {
+        collegeTable.getPageSelector().addItemListener((ItemEvent e) -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 Object selectedItem = e.getItem();
                 if (selectedItem != null) {
@@ -95,7 +92,7 @@ public class programsTable {
             }
         });
 
-        programsTable.getSearchInputField().getDocument().addDocumentListener(new DocumentListener() {
+        collegeTable.getSearchInputField().getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 searchFieldBar();
@@ -115,11 +112,12 @@ public class programsTable {
             }
         });
 
-        return programsTable;
+        return collegeTable;
+
     }
 
     public void fillTable() {
-        DefaultTableModel model = (DefaultTableModel) programsTable.getTemplateTable().getModel();
+        DefaultTableModel model = (DefaultTableModel) collegeTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
         if (connectionAttempt != null) {
@@ -131,35 +129,34 @@ public class programsTable {
     }
 
     public templatePaginatedTableForms sortSettings() {
-        searchText = programsTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().trim();
         if (!searchText.isEmpty()) {
-            return programsTable;
+            return collegeTable;
         }
 
-        String groupOptions = programsTable.getGroupOptionsComboBox().getSelectedItem().toString();
-        String sortArrangements = programsTable.getSortingArrangements().getSelectedItem().toString();
+        String groupOptions = collegeTable.getGroupOptionsComboBox().getSelectedItem().toString();
+        String sortArrangements = collegeTable.getSortingArrangements().getSelectedItem().toString();
         String sortOrder = sortArrangements.equalsIgnoreCase("Ascending") ? "ASC" : "DESC";
         int selectedPage = (startingPage - 1) * rowsPerPage;
 
         String currentPageQuery = " LIMIT " + rowsPerPage + " OFFSET " + selectedPage;
 
-        String QUERY = "SELECT pT.programCode, pT.programName, cT.collegeName"
-                + " FROM programsTable pT"
-                + " JOIN collegesTable cT ON pT.collegeCode = cT.collegeCode";
+        String QUERY = "SELECT cT.collegeCode, cT.collegeName"
+                + " FROM collegesTable cT";
 
         switch (groupOptions.toUpperCase()) {
 
-            case "PROGRAM CODE" ->
-                QUERY += " ORDER BY pT.programCode " + sortOrder + currentPageQuery;
+            case "COLLEGE CODE" ->
+                QUERY += " ORDER BY cT.collegeCode " + sortOrder + currentPageQuery;
 
-            case "PROGRAM NAME" ->
-                QUERY += " ORDER BY pT.programName " + sortOrder + currentPageQuery;
+            case "COLLEGE NAME" ->
+                QUERY += " ORDER BY cT.collegeName " + sortOrder + currentPageQuery;
 
             default ->
-                QUERY += " ORDER BY pT.programCode " + sortOrder + currentPageQuery;
+                QUERY += " ORDER BY cT.collegeCode " + sortOrder + currentPageQuery;
         }
 
-        DefaultTableModel model = (DefaultTableModel) programsTable.getTemplateTable().getModel();
+        DefaultTableModel model = (DefaultTableModel) collegeTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
         if (connectionAttempt != null) {
@@ -167,11 +164,10 @@ public class programsTable {
 
                 while (createResult.next()) {
 
-                    String programCode = createResult.getString("programCode");
-                    String programName = createResult.getString("programName");
+                    String collegeCode = createResult.getString("collegeCode");
                     String collegeName = createResult.getString("collegeName");
 
-                    model.addRow(new Object[]{programCode, programName, collegeName});
+                    model.addRow(new Object[]{collegeCode, collegeName});
 
                 }
             } catch (SQLException error) {
@@ -179,18 +175,18 @@ public class programsTable {
             }
         }
         setCounter();
-        programsTable.getTemplateTable().getTableHeader().repaint();
+        collegeTable.getTemplateTable().getTableHeader().repaint();
 
-        return programsTable;
+        return collegeTable;
     }
 
     public void setCounter() {
-        String QUERY = "SELECT COUNT(*) FROM programsTable";
+        String QUERY = "SELECT COUNT(*) FROM collegesTable";
 
         try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(QUERY)) {
             if (createResult.next()) {
                 int rowCount = createResult.getInt(1);
-                programsTable.setCounterLabel("Programs Found: " + String.valueOf(rowCount));
+                collegeTable.setCounterLabel("Colleges Found: " + String.valueOf(rowCount));
             }
         } catch (SQLException error) {
             System.err.println("SQL Error: " + error.getMessage());
@@ -199,11 +195,11 @@ public class programsTable {
 
     public void pageSelectorComboBox() {
 
-        searchText = programsTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
-            programsTable.getPageSelector().removeAllItems();
+            collegeTable.getPageSelector().removeAllItems();
             for (int i = 1; i <= getTotalPages(); i++) {
-                programsTable.getPageSelector().addItem(String.valueOf(i));
+                collegeTable.getPageSelector().addItem(String.valueOf(i));
             }
         }
 
@@ -211,7 +207,7 @@ public class programsTable {
 
     public int getTotalPages() {
 
-        searchText = programsTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().trim();
 
         if (!searchText.isEmpty()) {
             // Skip total count if search is active
@@ -220,14 +216,14 @@ public class programsTable {
 
         int totalRows = getTotalRows();
         int totalPages = (int) Math.ceil(totalRows / (double) rowsPerPage);
-        programsTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
+        collegeTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
 
         return totalPages;
     }
 
     public int getTotalRows() {
 
-        String QUERY = "SELECT COUNT(*) FROM programsTable";
+        String QUERY = "SELECT COUNT(*) FROM collegesTable";
         int totalRows = 0;
 
         try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(QUERY)) {
@@ -242,7 +238,7 @@ public class programsTable {
     }
 
     public int searchFieldBar() {
-        searchText = programsTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
             sortSettings();
             pageSelectorComboBox();
@@ -250,7 +246,7 @@ public class programsTable {
         }
 
         int totalMatches = countSearchResults(searchText);
-        programsTable.setCounterLabel("Programs Found: " + totalMatches);
+        collegeTable.setCounterLabel("Colleges Found: " + totalMatches);
 
         // 2) Populate the page selector based on match count
         int totalPages = getTotalSearchPages(totalMatches);
@@ -262,7 +258,7 @@ public class programsTable {
     }
 
     public int getTotalSearchPages(int rows) {
-        searchText = programsTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().trim();
 
         if (searchText.isEmpty()) {
             return getTotalPages();
@@ -275,11 +271,11 @@ public class programsTable {
             totalPages = 1;
         }
 
-        programsTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
+        collegeTable.setTotalPageLabel("out of " + String.valueOf(totalPages));
 
-        programsTable.getPageSelector().removeAllItems();
+        collegeTable.getPageSelector().removeAllItems();
         for (int i = 1; i <= totalPages; i++) {
-            programsTable.getPageSelector().addItem(String.valueOf(i));
+            collegeTable.getPageSelector().addItem(String.valueOf(i));
         }
 
         return totalPages;
@@ -287,19 +283,15 @@ public class programsTable {
 
     private int countSearchResults(String searchText) {
 
-        String countQuery = "SELECT COUNT(*) FROM programsTable pT "
-                + "JOIN collegesTable cT ON pT.collegeCode = cT.collegeCode "
-                + "WHERE pT.programName LIKE ? OR pT.programCode LIKE ? OR cT.collegeName LIKE ? "
-                + "OR cT.collegeCode LIKE ?";
+        String countQuery = "SELECT COUNT(*) FROM collegesTable cT "
+                + "WHERE cT.collegeName LIKE ? OR cT.collegeCode LIKE ?";
 
         try (PreparedStatement createPreparedStatement = connectionAttempt.prepareStatement(countQuery)) {
             String pattern = "%" + searchText + "%";
 
             // Bind the search text to each of the four fields
-            createPreparedStatement.setString(1, pattern); // programName
-            createPreparedStatement.setString(2, pattern); // programCode
-            createPreparedStatement.setString(3, pattern); // collegeName
-            createPreparedStatement.setString(4, pattern); // collegeCode
+            createPreparedStatement.setString(1, pattern); // collegeName
+            createPreparedStatement.setString(2, pattern); // collegeCode
 
             try (ResultSet rs = createPreparedStatement.executeQuery()) {
                 if (rs.next()) {
@@ -315,38 +307,31 @@ public class programsTable {
     private void fetchSearchPage(String searchText, int page, int rowsPerPage) {
         int offset = (page - 1) * rowsPerPage;
 
-        // Fuzzy search query for programName, programCode, collegeName, and collegeCode
-        String query = "SELECT pT.programCode, pT.programName, cT.collegeName "
-                + "FROM programsTable pT "
-                + "JOIN collegesTable cT ON pT.collegeCode = cT.collegeCode "
-                + "WHERE pT.programName LIKE ? OR pT.programCode LIKE ? OR cT.collegeName LIKE ? "
-                + "OR cT.collegeCode LIKE ? "
+        // Fuzzy search query for collegeName, and collegeCode
+        String query = "SELECT cT.collegeCode, cT.collegeName "
+                + "FROM collegesTable cT "
+                + "WHERE cT.collegeName LIKE ? OR cT.collegeCode LIKE ? "
                 + "LIMIT " + rowsPerPage + " OFFSET " + offset;
 
-        DefaultTableModel model = (DefaultTableModel) programsTable.getTemplateTable().getModel();
+        DefaultTableModel model = (DefaultTableModel) collegeTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
         try (PreparedStatement createPreparedStatement = connectionAttempt.prepareStatement(query)) {
             String pattern = "%" + searchText + "%";
 
             // Bind the search text to each of the four fields
-            createPreparedStatement.setString(1, pattern); // programName
-            createPreparedStatement.setString(2, pattern); // programCode
-            createPreparedStatement.setString(3, pattern); // collegeName
-            createPreparedStatement.setString(4, pattern); // collegeCode
+            createPreparedStatement.setString(1, pattern); // collegeName
+            createPreparedStatement.setString(2, pattern); // collegeCode
 
             try (ResultSet rs = createPreparedStatement.executeQuery()) {
                 while (rs.next()) {
                     model.addRow(new Object[]{
-                        rs.getString("programCode"),
-                        rs.getString("programName"),
-                        rs.getString("collegeName")
-                    });
+                        rs.getString("collegeCode"),
+                        rs.getString("collegeName"),});
                 }
             }
         } catch (SQLException e) {
             System.err.println("SQL Error (Fetch): " + e.getMessage());
         }
     }
-
 }

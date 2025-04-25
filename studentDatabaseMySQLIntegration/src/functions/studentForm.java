@@ -53,15 +53,11 @@ public class studentForm {
 
         if (dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
             System.out.println("Toggle Button says: " + toggleText + "\n");
-            enrollmentForm.getAllowIdEdit().setVisible(true);
             enrollmentForm.setFormHeaderTitle("LUPINBRIDGE UNIVERSITY STUDENT UPDATE FORM");
             enrollmentForm.setCreateButton("Finalize Changes");
-            enrollmentForm.getAllowIdEdit().setVisible(true);
         } else {
-            enrollmentForm.getAllowIdEdit().setVisible(true);
             enrollmentForm.setFormHeaderTitle("LUPINBRIDGE UNIVERSITY ENROLLMENT FORM");
             enrollmentForm.setCreateButton("Confirm Enrollment");
-            enrollmentForm.getAllowIdEdit().setVisible(false);
             System.out.println("\nToggle Button says: " + toggleText);
         }
     }

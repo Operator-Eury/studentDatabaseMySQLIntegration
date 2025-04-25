@@ -310,6 +310,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        templateTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         templateTable.setFillsViewportHeight(true);
         templateTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         templateTable.setShowGrid(true);

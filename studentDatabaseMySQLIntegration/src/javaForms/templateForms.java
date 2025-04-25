@@ -38,9 +38,6 @@ public class templateForms extends javax.swing.JPanel {
     }
 
     //getters
-    public javax.swing.JCheckBox getAllowIdEdit() {
-        return allowIdEdit;
-    }
 
     private void applyIDFormat(JTextField idNumberValue) {
         ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -118,7 +115,6 @@ public class templateForms extends javax.swing.JPanel {
         secondLinePanelHolder = new javax.swing.JPanel();
         idNumberLabel = new javax.swing.JLabel();
         idNumberField = new javax.swing.JTextField();
-        allowIdEdit = new javax.swing.JCheckBox();
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         formLowerPanel = new javax.swing.JPanel();
         discardButton = new javax.swing.JButton();
@@ -383,14 +379,6 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         secondLinePanelHolder.add(idNumberField, gridBagConstraints);
 
-        allowIdEdit.setText("Update Student ID");
-        allowIdEdit.setToolTipText("Toggles between selecting students through their ID Numbers or Updating the selected student's ID Number");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        secondLinePanelHolder.add(allowIdEdit, gridBagConstraints);
-        allowIdEdit.setVisible(false);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 9;
@@ -520,7 +508,6 @@ public class templateForms extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JCheckBox allowIdEdit;
     protected javax.swing.JComboBox<String> collegeComboBox;
     protected javax.swing.JLabel collegeNameLabel;
     protected javax.swing.JButton createButton;

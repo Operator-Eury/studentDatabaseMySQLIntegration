@@ -225,7 +225,7 @@
               <SubComponents>
                 <Container class="javax.swing.JPanel" name="collegesContainer">
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="templatePaginatedTableForms collegeTable = new templatePaginatedTableForms();&#xd;&#xa;&#xd;&#xa;            collegesContainer.removeAll();&#xd;&#xa;            collegesContainer.add(collegeTable);&#xd;&#xa;            collegesContainer.repaint();&#xd;&#xa;            collegesContainer.revalidate();"/>
+                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="collegesContainer.removeAll();&#xd;&#xa;         &#xd;&#xa;            collegesContainer.add(collegesTableForm.showTable());&#xd;&#xa;            &#xd;&#xa;            collegesContainer.repaint();&#xd;&#xa;            collegesContainer.revalidate();"/>
                   </AuxValues>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
