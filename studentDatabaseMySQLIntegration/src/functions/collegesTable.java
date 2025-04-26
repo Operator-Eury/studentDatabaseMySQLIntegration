@@ -31,7 +31,7 @@ public class collegesTable {
 
     Connection connectionAttempt = databaseConnector.getConnection();
 
-    public void startComponents() {
+    private void startComponents() {
         fillTable();
         sortSettings();
         getTotalPages();
@@ -116,7 +116,7 @@ public class collegesTable {
 
     }
 
-    public void fillTable() {
+    private void fillTable() {
         DefaultTableModel model = (DefaultTableModel) collegeTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
@@ -128,7 +128,7 @@ public class collegesTable {
 
     }
 
-    public templatePaginatedTableForms sortSettings() {
+    private templatePaginatedTableForms sortSettings() {
         searchText = collegeTable.getSearchInputField().getText().trim();
         if (!searchText.isEmpty()) {
             return collegeTable;
@@ -180,7 +180,7 @@ public class collegesTable {
         return collegeTable;
     }
 
-    public void setCounter() {
+    private void setCounter() {
         String QUERY = "SELECT COUNT(*) FROM collegesTable";
 
         try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(QUERY)) {
@@ -193,7 +193,7 @@ public class collegesTable {
         }
     }
 
-    public void pageSelectorComboBox() {
+    private void pageSelectorComboBox() {
 
         searchText = collegeTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
@@ -205,7 +205,7 @@ public class collegesTable {
 
     }
 
-    public int getTotalPages() {
+    private int getTotalPages() {
 
         searchText = collegeTable.getSearchInputField().getText().trim();
 
@@ -221,7 +221,7 @@ public class collegesTable {
         return totalPages;
     }
 
-    public int getTotalRows() {
+    private int getTotalRows() {
 
         String QUERY = "SELECT COUNT(*) FROM collegesTable";
         int totalRows = 0;
@@ -237,7 +237,7 @@ public class collegesTable {
         return totalRows;
     }
 
-    public int searchFieldBar() {
+    private int searchFieldBar() {
         searchText = collegeTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
             sortSettings();
@@ -257,7 +257,7 @@ public class collegesTable {
         return totalPages;
     }
 
-    public int getTotalSearchPages(int rows) {
+    private int getTotalSearchPages(int rows) {
         searchText = collegeTable.getSearchInputField().getText().trim();
 
         if (searchText.isEmpty()) {

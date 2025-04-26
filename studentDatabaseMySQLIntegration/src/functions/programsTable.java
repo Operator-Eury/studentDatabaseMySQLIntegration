@@ -31,7 +31,7 @@ public class programsTable {
 
     Connection connectionAttempt = databaseConnector.getConnection();
 
-    public void startComponents() {
+    private void startComponents() {
         fillTable();
         sortSettings();
         getTotalPages();
@@ -118,7 +118,7 @@ public class programsTable {
         return programsTable;
     }
 
-    public void fillTable() {
+    private void fillTable() {
         DefaultTableModel model = (DefaultTableModel) programsTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
@@ -130,7 +130,7 @@ public class programsTable {
 
     }
 
-    public templatePaginatedTableForms sortSettings() {
+    private templatePaginatedTableForms sortSettings() {
         searchText = programsTable.getSearchInputField().getText().trim();
         if (!searchText.isEmpty()) {
             return programsTable;
@@ -184,7 +184,7 @@ public class programsTable {
         return programsTable;
     }
 
-    public void setCounter() {
+    private void setCounter() {
         String QUERY = "SELECT COUNT(*) FROM programsTable";
 
         try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(QUERY)) {
@@ -197,7 +197,7 @@ public class programsTable {
         }
     }
 
-    public void pageSelectorComboBox() {
+    private void pageSelectorComboBox() {
 
         searchText = programsTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
@@ -209,7 +209,7 @@ public class programsTable {
 
     }
 
-    public int getTotalPages() {
+    private int getTotalPages() {
 
         searchText = programsTable.getSearchInputField().getText().trim();
 
@@ -225,7 +225,7 @@ public class programsTable {
         return totalPages;
     }
 
-    public int getTotalRows() {
+    private int getTotalRows() {
 
         String QUERY = "SELECT COUNT(*) FROM programsTable";
         int totalRows = 0;
@@ -241,7 +241,7 @@ public class programsTable {
         return totalRows;
     }
 
-    public int searchFieldBar() {
+    private int searchFieldBar() {
         searchText = programsTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
             sortSettings();
@@ -261,7 +261,7 @@ public class programsTable {
         return totalPages;
     }
 
-    public int getTotalSearchPages(int rows) {
+    private int getTotalSearchPages(int rows) {
         searchText = programsTable.getSearchInputField().getText().trim();
 
         if (searchText.isEmpty()) {

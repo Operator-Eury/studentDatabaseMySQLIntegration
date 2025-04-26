@@ -29,7 +29,7 @@ public class studentTable {
     private static final int rowsPerPage = 45;
     private String searchText = studentTable.getSearchInputField().getText().trim();
 
-    public void startComponents() {
+    private void startComponents() {
         fillTable();
         setCounter();
         getTotalPages();
@@ -145,7 +145,7 @@ public class studentTable {
 
     }
 
-    public void fillTable() {
+    private void fillTable() {
         DefaultTableModel model = (DefaultTableModel) studentTable.getTemplateTable().getModel();
         model.setRowCount(0);
 
@@ -156,7 +156,7 @@ public class studentTable {
         }
     }
 
-    public templatePaginatedTableForms sortSettings() {
+    private templatePaginatedTableForms sortSettings() {
         searchText = studentTable.getSearchInputField().getText().trim();
         if (!searchText.isEmpty()) {
             return studentTable;
@@ -230,7 +230,7 @@ public class studentTable {
         return studentTable;
     }
 
-    public void pageSelectorComboBox() {
+    private void pageSelectorComboBox() {
 
         searchText = studentTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
@@ -242,7 +242,7 @@ public class studentTable {
 
     }
 
-    public void setCounter() {
+    private void setCounter() {
         String QUERY = "SELECT COUNT(*) FROM studentTable";
 
         try (Statement createStatement = connectionAttempt.createStatement(); ResultSet createResult = createStatement.executeQuery(QUERY)) {
@@ -255,7 +255,7 @@ public class studentTable {
         }
     }
 
-    public int getTotalRows() {
+    private int getTotalRows() {
 
         String QUERY = "SELECT COUNT(*) FROM studentTable";
         int totalRows = 0;
@@ -271,7 +271,7 @@ public class studentTable {
         return totalRows;
     }
 
-    public int getTotalPages() {
+    private int getTotalPages() {
 
         searchText = studentTable.getSearchInputField().getText().trim();
 
@@ -287,7 +287,7 @@ public class studentTable {
         return totalPages;
     }
 
-    public int getTotalSearchPages(int rows) {
+    private int getTotalSearchPages(int rows) {
         searchText = studentTable.getSearchInputField().getText().trim();
 
         if (searchText.isEmpty()) {
@@ -311,7 +311,7 @@ public class studentTable {
         return totalPages;
     }
 
-    public int searchFieldBar() {
+    private int searchFieldBar() {
         searchText = studentTable.getSearchInputField().getText().trim();
         if (searchText.isEmpty()) {
             sortSettings();

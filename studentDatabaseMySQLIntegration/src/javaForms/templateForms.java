@@ -38,6 +38,45 @@ public class templateForms extends javax.swing.JPanel {
     }
 
     //getters
+    public javax.swing.JTextField getFirstNameField() {
+        return firstNameField;
+    }
+
+    public javax.swing.JTextField getMiddleNameField() {
+        return middleNameField;
+    }
+
+    public javax.swing.JTextField getLastNameField() {
+        return lastNameField;
+    }
+
+    public javax.swing.JComboBox getGenderComboBox() {
+        return genderComboBox;
+    }
+
+    public javax.swing.JComboBox getYearLevelComboBox() {
+        return yearLevelComboBox;
+    }
+    
+    public javax.swing.JComboBox getCollegeComboBox () {
+        return collegeComboBox;
+    }
+    
+    public javax.swing.JComboBox getProgramComboBox () {
+        return programComboBox;
+    }
+    
+    public javax.swing.JTextField getIdNumberField () {
+        return idNumberField;
+    }
+    
+    public javax.swing.JButton getCreateButton() {
+        return createButton;
+    }
+    
+    public javax.swing.JButton getDiscardButton() {
+        return discardButton;
+    }
 
     private void applyIDFormat(JTextField idNumberValue) {
         ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -102,7 +141,7 @@ public class templateForms extends javax.swing.JPanel {
         genderComboBox = new javax.swing.JComboBox<>();
         yearLevelLabel = new javax.swing.JLabel();
         filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        jComboBox1 = new javax.swing.JComboBox<>();
+        yearLevelComboBox = new javax.swing.JComboBox<>();
         collegeNameLabel = new javax.swing.JLabel();
         collegeComboBox = new javax.swing.JComboBox<>();
         programNameLabel = new javax.swing.JLabel();
@@ -256,8 +295,8 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         firstLineContent.add(filler5, gridBagConstraints);
 
-        jComboBox1.setBackground(new java.awt.Color(242, 242, 242));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Year Level", "1", "2", "3", "4" }));
+        yearLevelComboBox.setBackground(new java.awt.Color(242, 242, 242));
+        yearLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select Year Level", "1", "2", "3", "4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 2;
@@ -265,7 +304,7 @@ public class templateForms extends javax.swing.JPanel {
         gridBagConstraints.ipadx = 5;
         gridBagConstraints.ipady = 5;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        firstLineContent.add(jComboBox1, gridBagConstraints);
+        firstLineContent.add(yearLevelComboBox, gridBagConstraints);
 
         collegeNameLabel.setText("College:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -431,11 +470,6 @@ public class templateForms extends javax.swing.JPanel {
         createButton.setFont(createButton.getFont().deriveFont(createButton.getFont().getStyle() | java.awt.Font.BOLD));
         createButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/add.png"))); // NOI18N
         createButton.setText("Confirm Enrollment");
-        createButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                createButtonActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
@@ -502,10 +536,6 @@ public class templateForms extends javax.swing.JPanel {
         add(formHeaderPanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_createButtonActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JComboBox<String> collegeComboBox;
@@ -531,7 +561,6 @@ public class templateForms extends javax.swing.JPanel {
     protected javax.swing.JLabel genderLabel;
     protected javax.swing.JTextField idNumberField;
     protected javax.swing.JLabel idNumberLabel;
-    protected javax.swing.JComboBox<String> jComboBox1;
     protected javax.swing.JSeparator jSeparator2;
     protected javax.swing.JSeparator jSeparator3;
     protected javax.swing.JSeparator jSeparator4;
@@ -546,6 +575,7 @@ public class templateForms extends javax.swing.JPanel {
     protected javax.swing.JPanel secondLinePanelHolder;
     protected javax.swing.JLabel selectedCollegeLabel;
     protected javax.swing.JLabel selectedProgramLabel;
+    protected javax.swing.JComboBox<String> yearLevelComboBox;
     protected javax.swing.JLabel yearLevelLabel;
     // End of variables declaration//GEN-END:variables
 }
