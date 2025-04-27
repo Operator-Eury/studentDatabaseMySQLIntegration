@@ -6,6 +6,7 @@ package functions;
 
 import java.awt.event.ItemEvent;
 import javaForms.templatePaginatedTableForms;
+import javaForms.dashboardFrame;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import mySQLQueries.databaseConnector;
@@ -23,6 +24,13 @@ import javax.swing.event.DocumentListener;
  */
 public class studentTable {
 
+    private studentForm studentFormReference;
+
+    //setter
+    public void setStudentFormReference(studentForm form) {
+        this.studentFormReference = form;
+    }
+
     templatePaginatedTableForms studentTable = new templatePaginatedTableForms();
     Connection connectionAttempt = databaseConnector.getConnection();
     private int currentPage = 1;
@@ -36,7 +44,7 @@ public class studentTable {
         pageSelectorComboBox();
         studentTable.getTemplateTable().getTableHeader().repaint();
     }
-    
+
     public void refreshTable() {
         currentPage = 1;
         startComponents();
@@ -93,6 +101,20 @@ public class studentTable {
 
         studentTable.getUpdateButton().addActionListener(e -> {
             System.out.println("Update Button is Clicked");
+
+            dashboardFrame.getInstance().getDashboardTabs().setSelectedIndex(1);
+            dashboardFrame.getInstance().getToggleFormButton().setSelected(true);
+
+            int selectedRow = studentTable.getTemplateTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+
+                Object idNumberObject = studentTable.getTemplateTable().getValueAt(selectedRow, 0);
+                String idNumber = (String) idNumberObject;
+
+                studentFormReference.studentForm.getIdNumberField().setText(idNumber);
+            }
+
             studentTable.getTemplateTable().clearSelection();
             studentTable.getTemplateTable().repaint();
             studentTable.getTemplateTable().revalidate();
@@ -100,6 +122,8 @@ public class studentTable {
 
         studentTable.getCreateButton().addActionListener(e -> {
             System.out.println("Create Button is Clicked");
+            dashboardFrame.getInstance().getDashboardTabs().setSelectedIndex(1);
+            dashboardFrame.getInstance().getToggleFormButton().setSelected(false);
             studentTable.getTemplateTable().clearSelection();
             studentTable.getTemplateTable().repaint();
             studentTable.getTemplateTable().revalidate();

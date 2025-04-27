@@ -8,10 +8,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -22,7 +25,7 @@ import javax.swing.table.TableCellRenderer;
  * @author John-Ronan Beira
  */
 public class templatePaginatedTableForms extends javax.swing.JPanel {
-    
+
     /**
      * Creates new form templatePaginatedTableForm
      */
@@ -31,6 +34,56 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         centerTable();
         setupEscapeKeyToClearSelection(templateTable);
 
+        editItem.addActionListener(e -> {
+
+            System.out.println("Edit action triggered");
+        });
+
+        deleteItem.addActionListener(e -> {
+
+            System.out.println("Delete action triggered");
+        });
+
+        contextMenu.add(editItem);
+        contextMenu.add(deleteItem);
+
+        templateTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                
+                if (e.isPopupTrigger()) {
+
+                    int selectedRow = templateTable.getSelectedRow();
+                    
+                    if (selectedRow == -1) {
+                    
+                        int row = templateTable.rowAtPoint(e.getPoint());
+                    templateTable.setRowSelectionInterval(row, row);
+                    templateTable.requestFocusInWindow();
+                    }
+                    
+                    contextMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                
+                if (e.isPopupTrigger()) {
+
+                    int selectedRow = templateTable.getSelectedRow();
+                    
+                    if (selectedRow == -1) {
+                    
+                        int row = templateTable.rowAtPoint(e.getPoint());
+                    templateTable.setRowSelectionInterval(row, row);
+                    templateTable.requestFocusInWindow();
+                    }
+                    
+                    contextMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
     }
 
     private void setupEscapeKeyToClearSelection(JTable table) {
@@ -150,6 +203,10 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        contextMenu = new javax.swing.JPopupMenu();
+        deleteItem = new javax.swing.JMenuItem();
+        editItem = new javax.swing.JMenuItem();
+        modalMenu = new javax.swing.JDialog();
         operationsPanel = new javax.swing.JPanel();
         sortByOptions = new javax.swing.JLabel();
         groupOptionsComboBox = new javax.swing.JComboBox<>();
@@ -186,6 +243,17 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         jSeparator21 = new javax.swing.JSeparator();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
+
+        contextMenu.setComponentPopupMenu(contextMenu);
+        contextMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        deleteItem.setForeground(new java.awt.Color(255, 153, 153));
+        deleteItem.setText("Delete");
+        contextMenu.add(deleteItem);
+
+        editItem.setForeground(new java.awt.Color(0, 180, 255));
+        editItem.setText("Edit");
+        contextMenu.add(editItem);
 
         setMinimumSize(new java.awt.Dimension(826, 522));
         setPreferredSize(new java.awt.Dimension(826, 522));
@@ -316,11 +384,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         templateTable.setShowGrid(true);
         templateTable.getTableHeader().setResizingAllowed(false);
         templateTable.getTableHeader().setReorderingAllowed(false);
-        templateTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                templateTableFocusLost(evt);
-            }
-        });
         templateScrollPanel.setViewportView(templateTable);
         templateTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
@@ -453,17 +516,15 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         add(contextOperationsPanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void templateTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_templateTableFocusLost
-        // TODO add your handling code here:
-        templateTable.clearSelection();
-    }//GEN-LAST:event_templateTableFocusLost
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JPopupMenu contextMenu;
     protected javax.swing.JPanel contextOperationsPanel;
     protected javax.swing.JLabel counterLabel;
     protected javax.swing.JButton createButton;
     protected javax.swing.JLabel currentPageLabel;
+    protected javax.swing.JMenuItem deleteItem;
+    protected javax.swing.JMenuItem editItem;
     protected javax.swing.Box.Filler filler1;
     protected javax.swing.Box.Filler filler2;
     protected javax.swing.Box.Filler filler3;
@@ -485,6 +546,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.JSeparator jSeparator8;
     protected javax.swing.JSeparator jSeparator9;
     protected javax.swing.JPanel jTablePanel;
+    protected javax.swing.JDialog modalMenu;
     protected javax.swing.JPanel operationsPanel;
     protected javax.swing.JComboBox<String> pageSelector;
     protected javax.swing.JLabel searchInput;

@@ -15,12 +15,10 @@ import functions.studentForm;
  *
  * @author John-Ronan Beira
  */
-
 public class dashboardFrame extends javax.swing.JFrame {
-
+    
     private static dashboardFrame instance;
-    
-    
+
     /**
      * Creates new form dashboardFrame
      */
@@ -31,11 +29,13 @@ public class dashboardFrame extends javax.swing.JFrame {
         URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
         ImageIcon logo = new ImageIcon(iconUrl);
         setIconImage(logo.getImage());
+        
         studentEnrollmentForm.setStudentTableReference(studentTableForm);
+        studentTableForm.setStudentFormReference(studentEnrollmentForm);
     }
-    
+
     //setters
-    public void setToggleFormButtonn (String text) {
+    public void setToggleFormButtonn(String text) {
         toggleFormButton.setText(text);
     }
 
@@ -44,6 +44,10 @@ public class dashboardFrame extends javax.swing.JFrame {
         return toggleFormButton;
     }
     
+    public javax.swing.JTabbedPane getDashboardTabs() {
+        return dashboardTabs;
+    }
+
     //static method
     public static dashboardFrame getInstance() {
         return instance;
@@ -53,7 +57,7 @@ public class dashboardFrame extends javax.swing.JFrame {
     programsTable programsTableForm = new programsTable();
     studentTable studentTableForm = new studentTable();
     studentForm studentEnrollmentForm = new studentForm();
-        
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

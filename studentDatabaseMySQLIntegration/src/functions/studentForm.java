@@ -5,6 +5,7 @@
 package functions;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.Connection;
@@ -14,8 +15,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import javaForms.dashboardFrame;
+import javaForms.templateFeedbackModalForms;
 import javaForms.templateForms;
 import javax.swing.JToggleButton;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import mySQLQueries.databaseConnector;
 
 /**
@@ -24,16 +28,23 @@ import mySQLQueries.databaseConnector;
  */
 public class studentForm {
 
+    templateFeedbackModalForms newFeedbackModal = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+
     private studentTable studentTableReference;
     templateForms studentForm = new templateForms();
     private HashMap<String, HashMap<String, String>> programsMap;
     private HashMap<String, String> collegesMap;
     Connection connectionAttempt = databaseConnector.getConnection();
-    
+
     //setter
     public void setStudentTableReference(studentTable tableReference) {
-    this.studentTableReference = tableReference;
-}
+        this.studentTableReference = tableReference;
+    }
+
+    //getter
+    public templateForms getStudentForm() {
+        return this.studentForm;
+    }
 
     private void startComponents() {
         fillProgramsComboBox();
@@ -59,18 +70,17 @@ public class studentForm {
 
         studentForm.getCreateButton().addActionListener(e -> {
             if (!dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+
                 //enrollment state
                 System.out.println("Enrollment Button Triggered");
-                //popup modal
-                evaluateForm();
+                showDialog(e);
 
-                //enrollStudent();
             } else {
                 //update state
                 System.out.println("Update Button Triggered");
                 //popup modal
 
-                updateStudent();
+                showDialog(e);
 
             }
         });
@@ -91,6 +101,42 @@ public class studentForm {
                 String selectedCollegeName = (String) e.getItem();
                 filterProgramsByCollege(selectedCollegeName);
             }
+        });
+
+        newFeedbackModal.getConfirmButton().addActionListener(e -> {
+            newFeedbackModal.dispose();
+        });
+
+        studentForm.getIdNumberField().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                if (dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+                    searchStudentById();
+                }
+
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+                if (dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+                    searchStudentById();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+                if (dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+                    searchStudentById();
+                }
+
+            }
+        });
+
+        studentForm.getDiscardButton().addActionListener(e -> {
+            showDialog(e);
         });
 
         return studentForm;
@@ -126,6 +172,143 @@ public class studentForm {
             studentForm.getProgramComboBox().setSelectedIndex(0);
             studentForm.getCollegeComboBox().setSelectedIndex(0);
             studentForm.getIdNumberField().setText("0000-0000");
+        }
+    }
+
+    private void showDialog(ActionEvent eventOccur) {
+
+        Object source = eventOccur.getSource();
+
+        if (source == studentForm.getCreateButton()) {
+
+            templateFeedbackModalForms newOptionModal = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+
+            newOptionModal.getDeclineButton().addActionListener(e -> {
+                newOptionModal.dispose();
+            });
+
+            newOptionModal.getConfirmButton().addActionListener(e -> {
+
+                newOptionModal.dispose();
+                evaluateForm();
+
+            });
+
+            if (!dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+
+                newOptionModal.getFeedbackTextPane().setText("Proceed with the enrollment?");
+                newOptionModal.setTitle("Confirm Enrollment?");
+            } else {
+                newOptionModal.getFeedbackTextPane().setText("Proceed with the update?");
+                newOptionModal.setTitle("Confirm Update?");
+            }
+
+            newOptionModal.getConfirmButton().setText("Yes proceed");
+            newOptionModal.getDeclineButton().setText("I'll double check");
+            newOptionModal.getDeclineButton().requestFocusInWindow();
+
+            newOptionModal.setLocationRelativeTo(dashboardFrame.getInstance());
+            newOptionModal.setVisible(true);
+
+        } else if (source == studentForm.getDiscardButton()) {
+
+            templateFeedbackModalForms newOptionModal = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+
+            newOptionModal.getDeclineButton().addActionListener(e -> {
+                newOptionModal.dispose();
+            });
+
+            newOptionModal.getConfirmButton().addActionListener(e -> {
+
+                newOptionModal.dispose();
+                studentForm.getFirstNameField().setText("");
+                studentForm.getMiddleNameField().setText("");
+                studentForm.getLastNameField().setText("");
+                studentForm.getGenderComboBox().setSelectedIndex(0);
+                studentForm.getYearLevelComboBox().setSelectedIndex(0);
+                studentForm.getProgramComboBox().setSelectedIndex(0);
+                studentForm.getCollegeComboBox().setSelectedIndex(0);
+                studentForm.getIdNumberField().setText("0000-0000");
+
+            });
+
+            newOptionModal.getFeedbackTextPane().setText("Are you sure to reset your progress?");
+            newOptionModal.setTitle("Discard Progress");
+
+            newOptionModal.getConfirmButton().setText("Yes proceed");
+            newOptionModal.getDeclineButton().setText("I'll double check");
+            newOptionModal.getDeclineButton().requestFocusInWindow();
+
+            newOptionModal.setLocationRelativeTo(dashboardFrame.getInstance());
+            newOptionModal.setVisible(true);
+
+        }
+    }
+
+    private void searchStudentById() {
+        String SEARCHQUERY = "SELECT * FROM studentTable WHERE idNumber = ?";
+
+        String idNumber = studentForm.getIdNumberField().getText();
+
+        try (PreparedStatement createStatement = connectionAttempt.prepareStatement(SEARCHQUERY)) {
+
+            createStatement.setString(1, idNumber);
+
+            try (ResultSet createResult = createStatement.executeQuery()) {
+
+                if (createResult.next()) {
+
+                    studentForm.getFirstNameField().setText(createResult.getString("firstName"));
+                    studentForm.getMiddleNameField().setText(createResult.getString("middleName"));
+                    studentForm.getLastNameField().setText(createResult.getString("lastName"));
+                    studentForm.getGenderComboBox().setSelectedItem(createResult.getString("gender"));
+                    studentForm.getYearLevelComboBox().setSelectedItem(createResult.getString("yearLevel"));
+
+                    String collegeCode = createResult.getString("collegeCode");
+                    String programCode = createResult.getString("programCode");
+
+                    setCollegeAndProgramComboBox(collegeCode, programCode);
+
+                } else {
+
+                    studentForm.getFirstNameField().setText("");
+                    studentForm.getMiddleNameField().setText("");
+                    studentForm.getLastNameField().setText("");
+                    studentForm.getGenderComboBox().setSelectedIndex(0);
+                    studentForm.getYearLevelComboBox().setSelectedIndex(0);
+                    studentForm.getCollegeComboBox().setSelectedIndex(0);
+                    studentForm.getProgramComboBox().setSelectedIndex(0);
+
+                }
+            }
+        } catch (SQLException error) {
+            System.err.println("SQL Error: " + error.getMessage());
+        }
+    }
+
+    public void setCollegeAndProgramComboBox(String collegeCode, String programCode) {
+
+        String QUERY = "SELECT cT.collegeName, pT.programName FROM collegesTable cT JOIN programsTable pT ON pT.collegeCode = cT.collegeCode WHERE cT.collegeCode = ? and pT.programCode = ?";
+
+        try (PreparedStatement createStatement = connectionAttempt.prepareStatement(QUERY)) {
+
+            createStatement.setString(1, collegeCode);
+            createStatement.setString(2, programCode);
+
+            try (ResultSet createResult = createStatement.executeQuery()) {
+                if (createResult.next()) {
+
+                    studentForm.getCollegeComboBox().setSelectedItem(createResult.getString("collegeName"));
+                    studentForm.getProgramComboBox().setSelectedItem(createResult.getString("programName"));
+                } else {
+
+                    studentForm.getCollegeComboBox().setSelectedIndex(0);
+                    studentForm.getProgramComboBox().setSelectedIndex(0);
+
+                }
+            }
+        } catch (SQLException error) {
+            System.err.println("SQL Error: " + error.getMessage());
         }
     }
 
@@ -331,51 +514,89 @@ public class studentForm {
         String idNumber = studentForm.getIdNumberField().getText().strip();
 
         if (firstName.isBlank()) {
-            errors.append("First Name cannot be Empty. Who even are you?\n");
+            errors.append("First Name cannot be Empty\n");
         }
 
         if (lastName.isBlank()) {
-            errors.append("Last Name cannot be Empty. I mean you can't be possibly Adam or Eve that doesn't have last names right?\n");
+            errors.append("Last Name cannot be Empty\n");
         }
 
         if (gender.equalsIgnoreCase("Select Gender")) {
-            errors.append("You do have a Gender don't you?\n");
+            errors.append("Supply your Gender\n");
         }
 
         if (yearLevel.equalsIgnoreCase("Select Year Level")) {
-            errors.append("Am I seeing this correctly? You're enrolling without Year Level specified!\n");
+            errors.append("Supply your Year Level\n");
         }
 
         if (college.equalsIgnoreCase("Select College")) {
 
             if (gender.equalsIgnoreCase("Male")) {
-                errors.append("Sir, you don't seem to be enrolling to any college?\n");
+                errors.append("Sir, you need to have a College\n");
             } else if (gender.equalsIgnoreCase("Female")) {
-                errors.append("Ma'am, you don't seem to be enrolling to any college?\n");
+                errors.append("Ma'am, you need to have a College\n");
             } else {
-                errors.append("..., you don't seem to be enrolling to any college?\n");
+                errors.append("Hello, you need to have a College\n");
             }
         }
 
         if (program.equalsIgnoreCase("Select Program")) {
 
             if (gender.equalsIgnoreCase("Male")) {
-                errors.append("Sir, you don't seem to be enrolling to any program?\n");
+                errors.append("Sir, you need your Program\n");
             } else if (gender.equalsIgnoreCase("Female")) {
-                errors.append("Ma'am, you don't seem to be enrolling to any program?\n");
+                errors.append("Ma'am, you need your Program\n");
             } else {
-                errors.append("..., you don't seem to be enrolling to any program?\n");
+                errors.append("Hello, you need your Program\n");
             }
         }
 
-        if (isIdNumberUnique(idNumber) == false) {
-            errors.append("Oooh I see you're trying to steal someone's ID. Can't let you do that!\n");
+        if (!dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+            if (isIdNumberUnique(idNumber) == false) {
+                errors.append("That ID's taken!\n");
+            }
         }
 
         if (!errors.isEmpty()) {
+
             System.err.println(errors.toString());
+
+            if (!dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+                String errorConclusion = "Your Enrollment could not be completed due to following error(s):\n\n" + errors.toString();
+                newFeedbackModal.setTitle("Enrollment did not proceed due to following error(s)");
+                newFeedbackModal.getFeedbackTextPane().setText(errorConclusion);
+            } else {
+                String errorConclusion = "Update could not be completed due to following error(s):\n\n" + errors.toString();
+                newFeedbackModal.setTitle("Student Update did not proceed due to following error(s)");
+                newFeedbackModal.getFeedbackTextPane().setText(errorConclusion);
+            }
+
+            newFeedbackModal.setLocationRelativeTo(dashboardFrame.getInstance());
+            newFeedbackModal.getDeclineButton().setVisible(false);
+            newFeedbackModal.setVisible(true);
+            newFeedbackModal.getJScrollPane1().revalidate();
+            newFeedbackModal.getJScrollPane1().repaint();
+            newFeedbackModal.getJScrollPane1().getVerticalScrollBar().setValue(0);
+
         } else {
-            enrollStudent(idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode);
+
+            if (!dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
+                newFeedbackModal.setTitle("Enrollment Accepted");
+                newFeedbackModal.setLocationRelativeTo(dashboardFrame.getInstance());
+                newFeedbackModal.getFeedbackTextPane().setText("No invalid fields found, proceeding with the enrollment.");
+                newFeedbackModal.getDeclineButton().setVisible(false);
+                newFeedbackModal.setVisible(true);
+
+                enrollStudent(idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode);
+            } else {
+                newFeedbackModal.setTitle("Student Update Accepted");
+                newFeedbackModal.setLocationRelativeTo(dashboardFrame.getInstance());
+                newFeedbackModal.getFeedbackTextPane().setText("No invalid fields found, now updating student.");
+                newFeedbackModal.getDeclineButton().setVisible(false);
+                newFeedbackModal.setVisible(true);
+
+                updateStudent(idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode);
+            }
         }
     }
 
@@ -402,9 +623,9 @@ public class studentForm {
 
         String INSERTQUERY = "INSERT INTO studentTable (idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         try (PreparedStatement createStatement = connectionAttempt.prepareStatement(INSERTQUERY)) {
-            
+
             createStatement.setString(1, idNumber);
             createStatement.setString(2, firstName);
             createStatement.setString(3, middleName);
@@ -413,22 +634,87 @@ public class studentForm {
             createStatement.setString(6, yearLevel);
             createStatement.setString(7, collegeCode);
             createStatement.setString(8, programCode);
-            
+
             int rowsAffected = createStatement.executeUpdate();
-            
+
             if (rowsAffected > 0) {
                 System.out.println("Enrollment Done");
+                newFeedbackModal.dispose();
+                newFeedbackModal.setTitle("Enrollment Finished");
+                newFeedbackModal.setLocationRelativeTo(dashboardFrame.getInstance());
+                newFeedbackModal.getFeedbackTextPane().setText("Enrollment successfully operated");
+                newFeedbackModal.getDeclineButton().setVisible(false);
+                newFeedbackModal.setVisible(true);
                 studentTableReference.refreshTable();
+
+                studentForm.getFirstNameField().setText("");
+                studentForm.getMiddleNameField().setText("");
+                studentForm.getLastNameField().setText("");
+                studentForm.getGenderComboBox().setSelectedIndex(0);
+                studentForm.getYearLevelComboBox().setSelectedIndex(0);
+                studentForm.getProgramComboBox().setSelectedIndex(0);
+                studentForm.getCollegeComboBox().setSelectedIndex(0);
+                studentForm.getIdNumberField().setText("0000-0000");
             } else {
                 System.err.println("Enrollment Failed");
             }
-            
+
         } catch (SQLException e) {
             System.err.println("SQL Error: " + e.getMessage());
         }
     }
 
-    private void updateStudent() {
+    private void updateStudent(String idNumber, String firstName, String middleName,
+            String lastName, String gender, String yearLevel,
+            String collegeCode, String programCode) {
 
+        String UPDATEQUERY = "UPDATE studentTable SET "
+                + "firstName = ?, "
+                + "middleName = ?, "
+                + "lastName = ?, "
+                + "gender = ?, "
+                + "yearLevel = ?, "
+                + "collegeCode = ?, "
+                + "programCode = ? "
+                + "WHERE idNumber = ?";
+
+        try (PreparedStatement createStatement = connectionAttempt.prepareStatement(UPDATEQUERY)) {
+
+            createStatement.setString(1, firstName);
+            createStatement.setString(2, middleName);
+            createStatement.setString(3, lastName);
+            createStatement.setString(4, gender);
+            createStatement.setString(5, yearLevel);
+            createStatement.setString(6, collegeCode);
+            createStatement.setString(7, programCode);
+            createStatement.setString(8, idNumber);
+
+            int rowsAffected = createStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Student Update Done");
+                newFeedbackModal.dispose();
+                newFeedbackModal.setTitle("Update Finished");
+                newFeedbackModal.setLocationRelativeTo(dashboardFrame.getInstance());
+                newFeedbackModal.getFeedbackTextPane().setText("Update successfully operated");
+                newFeedbackModal.getDeclineButton().setVisible(false);
+                newFeedbackModal.setVisible(true);
+                studentTableReference.refreshTable();
+
+                studentForm.getFirstNameField().setText("");
+                studentForm.getMiddleNameField().setText("");
+                studentForm.getLastNameField().setText("");
+                studentForm.getGenderComboBox().setSelectedIndex(0);
+                studentForm.getYearLevelComboBox().setSelectedIndex(0);
+                studentForm.getProgramComboBox().setSelectedIndex(0);
+                studentForm.getCollegeComboBox().setSelectedIndex(0);
+                studentForm.getIdNumberField().setText("0000-0000");
+            } else {
+                System.err.println("Update Failed");
+            }
+
+        } catch (SQLException error) {
+            System.err.println("SQL Error: " + error.getMessage());
+        }
     }
 }
