@@ -31,6 +31,7 @@ public class dashboardFrame extends javax.swing.JFrame {
         URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
         ImageIcon logo = new ImageIcon(iconUrl);
         setIconImage(logo.getImage());
+        studentEnrollmentForm.setStudentTableReference(studentTableForm);
     }
     
     //setters

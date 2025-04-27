@@ -22,7 +22,7 @@ import javax.swing.table.TableCellRenderer;
  * @author John-Ronan Beira
  */
 public class templatePaginatedTableForms extends javax.swing.JPanel {
-
+    
     /**
      * Creates new form templatePaginatedTableForm
      */

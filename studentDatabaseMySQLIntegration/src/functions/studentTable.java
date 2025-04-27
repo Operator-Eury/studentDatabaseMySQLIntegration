@@ -36,6 +36,11 @@ public class studentTable {
         pageSelectorComboBox();
         studentTable.getTemplateTable().getTableHeader().repaint();
     }
+    
+    public void refreshTable() {
+        currentPage = 1;
+        startComponents();
+    }
 
     public templatePaginatedTableForms showTable() {
 
@@ -53,28 +58,28 @@ public class studentTable {
 
         TableColumnModel columnModel = studentTable.getTemplateTable().getColumnModel();
         columnModel.getColumn(0).setHeaderValue("ID Number");
-        columnModel.getColumn(0).setPreferredWidth(10); 
-        
+        columnModel.getColumn(0).setPreferredWidth(10);
+
         columnModel.getColumn(1).setHeaderValue("First Name");
-        columnModel.getColumn(1).setPreferredWidth(50); 
-        
+        columnModel.getColumn(1).setPreferredWidth(50);
+
         columnModel.getColumn(2).setHeaderValue("Middle Name");
-        columnModel.getColumn(2).setPreferredWidth(50); 
-        
+        columnModel.getColumn(2).setPreferredWidth(50);
+
         columnModel.getColumn(3).setHeaderValue("Last Name");
-        columnModel.getColumn(3).setPreferredWidth(50); 
-        
+        columnModel.getColumn(3).setPreferredWidth(50);
+
         columnModel.getColumn(4).setHeaderValue("Gender");
-        columnModel.getColumn(4).setPreferredWidth(10); 
-        
+        columnModel.getColumn(4).setPreferredWidth(10);
+
         columnModel.getColumn(5).setHeaderValue("Year Level");
-        columnModel.getColumn(5).setPreferredWidth(10); 
-        
+        columnModel.getColumn(5).setPreferredWidth(10);
+
         columnModel.getColumn(6).setHeaderValue("College Name");
-        columnModel.getColumn(6).setPreferredWidth(150); 
-        
+        columnModel.getColumn(6).setPreferredWidth(150);
+
         columnModel.getColumn(7).setHeaderValue("Program Name");
-        columnModel.getColumn(7).setPreferredWidth(250); 
+        columnModel.getColumn(7).setPreferredWidth(250);
 
         startComponents();
 
@@ -436,27 +441,27 @@ public class studentTable {
             } else if (isSingleDigit) {
                 int searchDigit = Integer.parseInt(searchText);
                 if (searchDigit > 4) {
-                    createPreparedStatement.setString(1, "%" + searchText + "%"); 
+                    createPreparedStatement.setString(1, "%" + searchText + "%");
                 } else if (searchDigit > 0) {
-                    createPreparedStatement.setInt(1, searchDigit); 
+                    createPreparedStatement.setInt(1, searchDigit);
                 } else {
-                    
+
                     String pattern = "%" + searchText + "%";
-                    for (int i = 1; i <= 8; i++) { 
+                    for (int i = 1; i <= 8; i++) {
                         createPreparedStatement.setString(i, pattern);
                     }
                     createPreparedStatement.setString(9, searchText);
                 }
             } else if (isNumeric) {
                 createPreparedStatement.setString(1, searchText);
-                createPreparedStatement.setString(2, "%" + searchText + "%"); 
-                createPreparedStatement.setString(3, "%" + searchText + "%"); 
+                createPreparedStatement.setString(2, "%" + searchText + "%");
+                createPreparedStatement.setString(3, "%" + searchText + "%");
             } else {
                 String pattern = "%" + searchText + "%";
                 for (int i = 1; i <= 8; i++) {
                     createPreparedStatement.setString(i, pattern);
                 }
-                createPreparedStatement.setString(9, searchText); 
+                createPreparedStatement.setString(9, searchText);
             }
 
             try (ResultSet rs = createPreparedStatement.executeQuery()) {

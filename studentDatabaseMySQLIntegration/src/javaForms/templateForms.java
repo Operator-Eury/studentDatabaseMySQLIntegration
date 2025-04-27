@@ -77,6 +77,14 @@ public class templateForms extends javax.swing.JPanel {
     public javax.swing.JButton getDiscardButton() {
         return discardButton;
     }
+    
+    public javax.swing.JLabel getSelectedCollegeLabel() {
+        return selectedCollegeLabel;
+    }
+    
+    public javax.swing.JLabel getSelectedProgramLabel() {
+        return selectedProgramLabel;
+    }
 
     private void applyIDFormat(JTextField idNumberValue) {
         ((AbstractDocument) idNumberValue.getDocument()).setDocumentFilter(new DocumentFilter() {

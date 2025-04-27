@@ -10,6 +10,7 @@ import java.awt.event.ItemListener;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import javaForms.dashboardFrame;
@@ -23,10 +24,16 @@ import mySQLQueries.databaseConnector;
  */
 public class studentForm {
 
+    private studentTable studentTableReference;
     templateForms studentForm = new templateForms();
     private HashMap<String, HashMap<String, String>> programsMap;
     private HashMap<String, String> collegesMap;
     Connection connectionAttempt = databaseConnector.getConnection();
+    
+    //setter
+    public void setStudentTableReference(studentTable tableReference) {
+    this.studentTableReference = tableReference;
+}
 
     private void startComponents() {
         fillProgramsComboBox();
@@ -55,9 +62,9 @@ public class studentForm {
                 //enrollment state
                 System.out.println("Enrollment Button Triggered");
                 //popup modal
+                evaluateForm();
 
-                enrollStudent();
-
+                //enrollStudent();
             } else {
                 //update state
                 System.out.println("Update Button Triggered");
@@ -160,6 +167,25 @@ public class studentForm {
         }
     }
 
+    private String retrieveProgramCodeFromName(String programName) {
+
+        if (programName.isBlank() || programName.isEmpty() || programName.equalsIgnoreCase("Select Program")) {
+            return null;
+        }
+
+        for (String programCode : programsMap.keySet()) {
+
+            HashMap<String, String> programInfo = programsMap.get(programCode);
+
+            for (String selectedProgramName : programInfo.keySet()) {
+                if (selectedProgramName.equals(programName)) {
+                    return programCode;
+                }
+            }
+        }
+        return null;
+    }
+
     private void autoSelectCollege(String selectedProgramName) {
 
         if (!selectedProgramName.equals("Select Program")) {
@@ -184,6 +210,9 @@ public class studentForm {
                 if (collegeNameToMatch != null) {
                     studentForm.getCollegeComboBox().setSelectedItem(collegeNameToMatch);
                 }
+
+                studentForm.getSelectedCollegeLabel().setText(collegeNameToMatch);
+                studentForm.getSelectedProgramLabel().setText(selectedProgramName);
             }
 
             for (ItemListener listener : collegeListeners) {
@@ -192,6 +221,8 @@ public class studentForm {
 
         } else {
             studentForm.getCollegeComboBox().setSelectedIndex(0);
+            studentForm.getSelectedCollegeLabel().setText("PLEASE SELECT COLLEGE");
+            studentForm.getSelectedProgramLabel().setText("PLEASE SELECT PROGRAM");
         }
     }
 
@@ -261,13 +292,32 @@ public class studentForm {
                 for (ItemListener listener : programListeners) {
                     studentForm.getProgramComboBox().addItemListener(listener);
                 }
+
+                studentForm.getSelectedCollegeLabel().setText(selectedCollegeName);
             }
         } else {
             fillProgramsComboBox();
+            studentForm.getSelectedCollegeLabel().setText("PLEASE SELECT COLLEGE");
         }
     }
 
-    private void enrollStudent() {
+    private String retrieveCollegeCodeFromName(String collegeName) {
+
+        if (collegeName.isBlank() || collegeName.isEmpty() || collegeName.equalsIgnoreCase("Select College")) {
+            return null;
+        }
+
+        for (String collegeCode : collegesMap.keySet()) {
+            if (collegesMap.get(collegeCode).equals(collegeName)) {
+                return collegeCode;
+            }
+        }
+
+        return null;
+    }
+
+    private void evaluateForm() {
+        StringBuilder errors = new StringBuilder();
 
         String firstName = studentForm.getFirstNameField().getText().strip();
         String middleName = studentForm.getMiddleNameField().getText().strip();
@@ -275,22 +325,110 @@ public class studentForm {
         String gender = (String) studentForm.getGenderComboBox().getSelectedItem();
         String yearLevel = (String) studentForm.getYearLevelComboBox().getSelectedItem();
         String college = (String) studentForm.getCollegeComboBox().getSelectedItem();
+        String collegeCode = retrieveCollegeCodeFromName(college);
         String program = (String) studentForm.getProgramComboBox().getSelectedItem();
+        String programCode = retrieveProgramCodeFromName(program);
         String idNumber = studentForm.getIdNumberField().getText().strip();
 
-        //String INSERTQUERY = "INSERT INTO studentTable (idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode)"
+        if (firstName.isBlank()) {
+            errors.append("First Name cannot be Empty. Who even are you?\n");
+        }
+
+        if (lastName.isBlank()) {
+            errors.append("Last Name cannot be Empty. I mean you can't be possibly Adam or Eve that doesn't have last names right?\n");
+        }
+
+        if (gender.equalsIgnoreCase("Select Gender")) {
+            errors.append("You do have a Gender don't you?\n");
+        }
+
+        if (yearLevel.equalsIgnoreCase("Select Year Level")) {
+            errors.append("Am I seeing this correctly? You're enrolling without Year Level specified!\n");
+        }
+
+        if (college.equalsIgnoreCase("Select College")) {
+
+            if (gender.equalsIgnoreCase("Male")) {
+                errors.append("Sir, you don't seem to be enrolling to any college?\n");
+            } else if (gender.equalsIgnoreCase("Female")) {
+                errors.append("Ma'am, you don't seem to be enrolling to any college?\n");
+            } else {
+                errors.append("..., you don't seem to be enrolling to any college?\n");
+            }
+        }
+
+        if (program.equalsIgnoreCase("Select Program")) {
+
+            if (gender.equalsIgnoreCase("Male")) {
+                errors.append("Sir, you don't seem to be enrolling to any program?\n");
+            } else if (gender.equalsIgnoreCase("Female")) {
+                errors.append("Ma'am, you don't seem to be enrolling to any program?\n");
+            } else {
+                errors.append("..., you don't seem to be enrolling to any program?\n");
+            }
+        }
+
+        if (isIdNumberUnique(idNumber) == false) {
+            errors.append("Oooh I see you're trying to steal someone's ID. Can't let you do that!\n");
+        }
+
+        if (!errors.isEmpty()) {
+            System.err.println(errors.toString());
+        } else {
+            enrollStudent(idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode);
+        }
+    }
+
+    private boolean isIdNumberUnique(String idNumber) {
+        String query = "SELECT COUNT(*) FROM studentTable WHERE idNumber = ?";
+
+        try (PreparedStatement statement = connectionAttempt.prepareStatement(query)) {
+            statement.setString(1, idNumber);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count == 0;
+            }
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+        return false;
+    }
+
+    private void enrollStudent(String idNumber, String firstName, String middleName,
+            String lastName, String gender, String yearLevel,
+            String collegeCode, String programCode) {
+
+        String INSERTQUERY = "INSERT INTO studentTable (idNumber, firstName, middleName, lastName, gender, yearLevel, collegeCode, programCode) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement createStatement = connectionAttempt.prepareStatement(INSERTQUERY)) {
+            
+            createStatement.setString(1, idNumber);
+            createStatement.setString(2, firstName);
+            createStatement.setString(3, middleName);
+            createStatement.setString(4, lastName);
+            createStatement.setString(5, gender);
+            createStatement.setString(6, yearLevel);
+            createStatement.setString(7, collegeCode);
+            createStatement.setString(8, programCode);
+            
+            int rowsAffected = createStatement.executeUpdate();
+            
+            if (rowsAffected > 0) {
+                System.out.println("Enrollment Done");
+                studentTableReference.refreshTable();
+            } else {
+                System.err.println("Enrollment Failed");
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage());
+        }
     }
 
     private void updateStudent() {
-
-        String firstName = studentForm.getFirstNameField().getText().strip();
-        String middleName = studentForm.getMiddleNameField().getText().strip();
-        String lastName = studentForm.getLastNameField().getText().strip();
-        String gender = (String) studentForm.getGenderComboBox().getSelectedItem();
-        String yearLevel = (String) studentForm.getYearLevelComboBox().getSelectedItem();
-        String college = (String) studentForm.getCollegeComboBox().getSelectedItem();
-        String program = (String) studentForm.getProgramComboBox().getSelectedItem();
-        String idNumber = studentForm.getIdNumberField().getText().strip();
 
     }
 }
