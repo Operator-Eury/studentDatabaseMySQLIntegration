@@ -52,6 +52,7 @@ public class collegesTable {
     }
 
     private void refreshTable() {
+        startingPage = 1;
         startComponents();
     }
 
@@ -517,52 +518,7 @@ public class collegesTable {
         }
 
     }
-
-    private Set<String> getCollegesWithDependencies(List<String> collegeCodes) {
-        Set<String> collegesWithDependencies = new HashSet<>();
-
-        if (collegeCodes.isEmpty()) {
-            return collegesWithDependencies;
-        }
-
-        // Prepare placeholders (?, ?, ?) for SQL IN (...)
-        String placeholders = String.join(",", Collections.nCopies(collegeCodes.size(), "?"));
-
-        String PROGRAM_CHECK = "SELECT DISTINCT collegeCode FROM programsTable WHERE collegeCode IN (" + placeholders + ")";
-        String STUDENT_CHECK = "SELECT DISTINCT collegeCode FROM studentTable WHERE collegeCode IN (" + placeholders + ")";
-
-        try {
-            // Check programsTable
-            try (PreparedStatement programStatement = connectionAttempt.prepareStatement(PROGRAM_CHECK)) {
-                for (int i = 0; i < collegeCodes.size(); i++) {
-                    programStatement.setString(i + 1, collegeCodes.get(i));
-                }
-                try (ResultSet programResult = programStatement.executeQuery()) {
-                    while (programResult.next()) {
-                        collegesWithDependencies.add(programResult.getString("collegeCode"));
-                    }
-                }
-            }
-
-            // Check studentTable
-            try (PreparedStatement studentStatement = connectionAttempt.prepareStatement(STUDENT_CHECK)) {
-                for (int i = 0; i < collegeCodes.size(); i++) {
-                    studentStatement.setString(i + 1, collegeCodes.get(i));
-                }
-                try (ResultSet studentResult = studentStatement.executeQuery()) {
-                    while (studentResult.next()) {
-                        collegesWithDependencies.add(studentResult.getString("collegeCode"));
-                    }
-                }
-            }
-
-        } catch (SQLException error) {
-            System.err.println("SQL Error: " + error.getMessage());
-        }
-
-        return collegesWithDependencies; // Set of collegeCodes that cannot be deleted
-    }
-
+    
     private void evaluateForm(String collegeCode, String collegeName, boolean isUpdate) {
 
         StringBuilder errors = new StringBuilder();
@@ -717,7 +673,7 @@ public class collegesTable {
 
     private void searchCollegeNameByCode() {
 
-        String collegeCode = collegeTable.getItemCode().getText().toString().strip();
+        String collegeCode = collegeTable.getItemCode().getText().strip();
 
         String SEARCHQUERY = "SELECT collegeName FROM collegesTable WHERE collegeCode = ?";
 

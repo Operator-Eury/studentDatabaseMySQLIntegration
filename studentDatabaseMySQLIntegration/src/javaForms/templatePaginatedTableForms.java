@@ -261,10 +261,8 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         formPanel = new javax.swing.JPanel();
         itemCode = new javax.swing.JTextField();
         itemName = new javax.swing.JTextField();
-        collegeComboBox = new javax.swing.JComboBox<>();
         itemCodeLabel = new javax.swing.JLabel();
         itemNameLabel = new javax.swing.JLabel();
-        collegeCodeComboBoxLabel = new javax.swing.JLabel();
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel1 = new javax.swing.JPanel();
@@ -273,6 +271,11 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         ImageIcon originalIcon = new ImageIcon(getClass().getResource("/resources/images/dog.png"));
         Image scaledImage = originalIcon.getImage().getScaledInstance(128, 128, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(scaledImage);
+        jPanel2 = new javax.swing.JPanel();
+        collegeCodeComboBoxLabel = new javax.swing.JLabel();
+        collegeComboBox = new javax.swing.JComboBox<>();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         buttonPanel = new javax.swing.JPanel();
         acceptButton = new javax.swing.JButton();
         declineButton = new javax.swing.JButton();
@@ -366,17 +369,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         formPanel.add(itemName, gridBagConstraints);
 
-        collegeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select College" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.weightx = 0.1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        formPanel.add(collegeComboBox, gridBagConstraints);
-
         itemCodeLabel.setText("jLabel1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -394,15 +386,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.ipady = 5;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         formPanel.add(itemNameLabel, gridBagConstraints);
-
-        collegeCodeComboBoxLabel.setText("jLabel1");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        formPanel.add(collegeCodeComboBoxLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -429,6 +412,44 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         formPanel.add(jPanel1, gridBagConstraints);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        collegeCodeComboBoxLabel.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel2.add(collegeCodeComboBoxLabel, gridBagConstraints);
+
+        collegeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select College" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel2.add(collegeComboBox, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 0.1;
+        jPanel2.add(filler5, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 0.1;
+        jPanel2.add(filler8, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        formPanel.add(jPanel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -751,8 +772,10 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.Box.Filler filler2;
     protected javax.swing.Box.Filler filler3;
     protected javax.swing.Box.Filler filler4;
+    protected javax.swing.Box.Filler filler5;
     protected javax.swing.Box.Filler filler6;
     protected javax.swing.Box.Filler filler7;
+    protected javax.swing.Box.Filler filler8;
     protected javax.swing.JPanel formPanel;
     protected javax.swing.JComboBox<String> groupOptionsComboBox;
     protected javax.swing.JLabel headerLabel;
@@ -761,6 +784,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.JTextField itemName;
     protected javax.swing.JLabel itemNameLabel;
     protected javax.swing.JPanel jPanel1;
+    protected javax.swing.JPanel jPanel2;
     protected javax.swing.JSeparator jSeparator1;
     protected javax.swing.JSeparator jSeparator13;
     protected javax.swing.JSeparator jSeparator14;

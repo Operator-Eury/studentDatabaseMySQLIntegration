@@ -37,6 +37,7 @@ public class dashboardFrame extends javax.swing.JFrame {
 
         studentEnrollmentForm.setStudentTableReference(studentTableForm);
         studentTableForm.setStudentFormReference(studentEnrollmentForm);
+        programsTableForm.setStudentFormReference(studentTableForm);
     }
 
     //setters
