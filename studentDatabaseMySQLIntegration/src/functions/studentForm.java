@@ -144,7 +144,7 @@ public class studentForm {
 
     private void changeState() {
 
-        String toggleText = dashboardFrame.getInstance().getToggleFormButton().getText();
+        String toggleText = dashboardFrame.getInstance().getToggleFormButton().getText().strip();
 
         if (dashboardFrame.getInstance().getToggleFormButton().isSelected()) {
             studentForm.setFormHeaderTitle("LUPINBRIDGE UNIVERSITY STUDENT UPDATE FORM");
@@ -248,7 +248,7 @@ public class studentForm {
     private void searchStudentById() {
         String SEARCHQUERY = "SELECT * FROM studentTable WHERE idNumber = ?";
 
-        String idNumber = studentForm.getIdNumberField().getText();
+        String idNumber = studentForm.getIdNumberField().getText().strip();
 
         try (PreparedStatement createStatement = connectionAttempt.prepareStatement(SEARCHQUERY)) {
 

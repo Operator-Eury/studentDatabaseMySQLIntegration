@@ -4,6 +4,8 @@
  */
 package functions;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javaForms.templatePaginatedTableForms;
+import javaForms.dashboardFrame;
+import javaForms.templateFeedbackModalForms;
+import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -27,7 +32,7 @@ public class collegesTable {
     private static final int rowsPerPage = 45;
     templatePaginatedTableForms collegeTable = new templatePaginatedTableForms();
 
-    private String searchText = collegeTable.getSearchInputField().getText().trim();
+    private String searchText = collegeTable.getSearchInputField().getText().strip();
 
     Connection connectionAttempt = databaseConnector.getConnection();
 
@@ -39,10 +44,16 @@ public class collegesTable {
         collegeTable.getTemplateTable().getTableHeader().repaint();
     }
 
+    private void refreshTable() {
+        startComponents();
+    }
+
     public templatePaginatedTableForms showTable() {
 
         collegeTable.setUpdateButton("Update College");
         collegeTable.setCreateButton("Register College");
+
+        collegeTable.getNewItem().setText("Register College");
 
         collegeTable.getGroupOptionsComboBox().removeAllItems();
         collegeTable.getGroupOptionsComboBox().addItem("College Name");
@@ -112,7 +123,202 @@ public class collegesTable {
             }
         });
 
+        collegeTable.getCreateButton().addActionListener(e -> {
+            showFormDialog(e);
+        });
+
+        collegeTable.getUpdateButton().addActionListener(e -> {
+            showFormDialog(e);
+        });
+
+        collegeTable.getAcceptButton().addActionListener(e -> {
+
+            String collegeCode = collegeTable.getItemCode().getText().toUpperCase().strip();
+            String collegeName = collegeTable.getItemName().getText().strip();
+
+            if (collegeTable.getAcceptButton().getText().equalsIgnoreCase("Register College")) {
+                evaluateForm(collegeCode, collegeName, false);
+            } else {
+                evaluateForm(collegeCode, collegeName, true);
+            }
+
+        });
+
         return collegeTable;
+
+    }
+
+    private void showFormDialog(ActionEvent event) {
+
+        Object source = event.getSource();
+
+        collegeTable.getDeclineButton().addActionListener(e -> {
+            collegeTable.getItemCode().setText("");
+            collegeTable.getItemName().setText("");
+            collegeTable.getModalMenu().dispose();
+        });
+
+        if (source == collegeTable.getCreateButton()) {
+
+            collegeTable.getModalMenu().setLocationRelativeTo(dashboardFrame.getInstance());
+            collegeTable.getModalMenu().setResizable(false);
+            collegeTable.getModalMenu().setTitle("Registering a College");
+            collegeTable.getItemCodeLabel().setText("College Code: ");
+            collegeTable.getItemNameLabel().setText("College Name");
+            collegeTable.getCollegeCodeComboBoxLabel().setVisible(false);
+            collegeTable.getCollegeComboBox().setVisible(false);
+            collegeTable.getHeaderLabel().setText("LUPINBRIDGE COLLEGE REGISTRATION");
+            collegeTable.getAcceptButton().setText("Register College");
+            collegeTable.getAcceptButton().setBackground(new Color(153, 255, 153));
+            collegeTable.getDeclineButton().setText("Discard Progress");
+
+            ImageIcon newIcon = new ImageIcon(getClass().getResource("/resources/images/add.png"));
+            collegeTable.getAcceptButton().setIcon(newIcon);
+
+            collegeTable.getModalMenu().setVisible(true);
+
+        }
+
+        if (source == collegeTable.getUpdateButton()) {
+            collegeTable.getModalMenu().setLocationRelativeTo(dashboardFrame.getInstance());
+            collegeTable.getModalMenu().setResizable(false);
+            collegeTable.getModalMenu().setTitle("Updating a College");
+            collegeTable.getItemCodeLabel().setText("College Code: ");
+            collegeTable.getItemNameLabel().setText("College Name");
+            collegeTable.getCollegeCodeComboBoxLabel().setVisible(false);
+            collegeTable.getCollegeComboBox().setVisible(false);
+            collegeTable.getHeaderLabel().setText("LUPINBRIDGE UPDATE COLLEGE");
+            collegeTable.getAcceptButton().setText("Update College");
+            collegeTable.getAcceptButton().setBackground(new Color(0, 180, 255));
+            collegeTable.getDeclineButton().setText("Discard Progress");
+
+            ImageIcon originalIcon = new ImageIcon(getClass().getResource("/resources/images/updated.png"));
+            collegeTable.getAcceptButton().setIcon(originalIcon);
+
+            collegeTable.getModalMenu().setVisible(true);
+        }
+
+    }
+
+    private void evaluateForm(String collegeCode, String collegeName, boolean isUpdate) {
+
+        StringBuilder errors = new StringBuilder();
+        boolean hasError;
+
+        collegeCode = collegeCode.strip();
+        collegeName = collegeName.strip();
+
+        if (collegeCode.isBlank()) {
+            errors.append("College Code cannot be Empty\n");
+        }
+
+        if (collegeName.isBlank()) {
+            errors.append("College Name cannot be Empty\n");
+        }
+
+        if (!isUpdate) {
+            if (isCollegeCodeUnique(collegeCode) == false) {
+                errors.append("That College Code's taken!\n");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+
+            System.err.println(errors.toString());
+            hasError = true;
+
+        } else {
+
+            hasError = false;
+
+        }
+
+        processCollege(collegeCode, collegeName, isUpdate, hasError, errors.toString());
+
+    }
+
+    private boolean isCollegeCodeUnique(String collegeCode) {
+        String query = "SELECT COUNT(*) FROM collegesTable WHERE collegeCode = ?";
+
+        try (PreparedStatement statement = connectionAttempt.prepareStatement(query)) {
+            statement.setString(1, collegeCode);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count == 0;
+            }
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+        return false;
+    }
+
+    private void processCollege(String collegeCode, String collegeName, boolean isUpdate, boolean hasError, String errorList) {
+
+        templateFeedbackModalForms newFeedback = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+        newFeedback.getDeclineButton().setVisible(false);
+        newFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
+
+        newFeedback.getConfirmButton().addActionListener(e -> {
+            if(!hasError) {
+            collegeTable.getModalMenu().dispose();
+            collegeTable.getItemCode().setText("");
+            collegeTable.getItemName().setText("");
+            }
+            refreshTable();
+            newFeedback.dispose();
+        });
+
+        String INSERTQUERY = "INSERT INTO collegesTable (collegeCode, collegeName)"
+                + " VALUES (?, ?)";
+
+        if (!hasError) {
+
+            if (isUpdate == false) {
+
+                try (PreparedStatement createStatement = connectionAttempt.prepareStatement(INSERTQUERY)) {
+
+                    createStatement.setString(1, collegeCode);
+                    createStatement.setString(2, collegeName);
+
+                    int rowsAffected = createStatement.executeUpdate();
+
+                    if (rowsAffected > 0) {
+
+                        System.out.println("Registration Done");
+                        collegeTable.getModalMenu().setTitle("College Registered");
+                        newFeedback.getFeedbackTextPane().setText("College successfully registered!");
+
+                        newFeedback.setVisible(true);
+
+                    } else {
+                        System.err.println("Registration Failed");
+                    }
+
+                } catch (SQLException error) {
+                    System.err.println("SQL Error: " + error.getMessage());
+                }
+            }
+
+        } else if (hasError) {
+
+            if (!isUpdate) {
+
+                String errorConclusion = "College Registration could not be completed due to following error(s):\n\n" + errorList;
+                newFeedback.setTitle("College Registration did not proceed due to following error(s)");
+                newFeedback.getFeedbackTextPane().setText(errorConclusion);
+                newFeedback.setVisible(true);
+
+            } else {
+
+                String errorConclusion = "College Update could not be completed due to following error(s):\n\n" + errorList;
+                newFeedback.setTitle("College Update did not proceed due to following error(s)");
+                newFeedback.getFeedbackTextPane().setText(errorConclusion);
+                newFeedback.setVisible(true);
+
+            }
+        }
 
     }
 
@@ -129,7 +335,7 @@ public class collegesTable {
     }
 
     private templatePaginatedTableForms sortSettings() {
-        searchText = collegeTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().strip();
         if (!searchText.isEmpty()) {
             return collegeTable;
         }
@@ -195,7 +401,7 @@ public class collegesTable {
 
     private void pageSelectorComboBox() {
 
-        searchText = collegeTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().strip();
         if (searchText.isEmpty()) {
             collegeTable.getPageSelector().removeAllItems();
             for (int i = 1; i <= getTotalPages(); i++) {
@@ -207,10 +413,10 @@ public class collegesTable {
 
     private int getTotalPages() {
 
-        searchText = collegeTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().strip();
 
         if (!searchText.isEmpty()) {
-            // Skip total count if search is active
+
             return 0;
         }
 
@@ -238,7 +444,7 @@ public class collegesTable {
     }
 
     private int searchFieldBar() {
-        searchText = collegeTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().strip();
         if (searchText.isEmpty()) {
             sortSettings();
             pageSelectorComboBox();
@@ -247,18 +453,16 @@ public class collegesTable {
 
         int totalMatches = countSearchResults(searchText);
         collegeTable.setCounterLabel("Colleges Found: " + totalMatches);
-
-        // 2) Populate the page selector based on match count
+        
         int totalPages = getTotalSearchPages(totalMatches);
-
-        // 3) Fetch and display the current page
+        
         fetchSearchPage(searchText, startingPage, rowsPerPage);
 
         return totalPages;
     }
 
     private int getTotalSearchPages(int rows) {
-        searchText = collegeTable.getSearchInputField().getText().trim();
+        searchText = collegeTable.getSearchInputField().getText().strip();
 
         if (searchText.isEmpty()) {
             return getTotalPages();
@@ -289,9 +493,8 @@ public class collegesTable {
         try (PreparedStatement createPreparedStatement = connectionAttempt.prepareStatement(countQuery)) {
             String pattern = "%" + searchText + "%";
 
-            // Bind the search text to each of the four fields
-            createPreparedStatement.setString(1, pattern); // collegeName
-            createPreparedStatement.setString(2, pattern); // collegeCode
+            createPreparedStatement.setString(1, pattern);
+            createPreparedStatement.setString(2, pattern);
 
             try (ResultSet rs = createPreparedStatement.executeQuery()) {
                 if (rs.next()) {
@@ -307,7 +510,6 @@ public class collegesTable {
     private void fetchSearchPage(String searchText, int page, int rowsPerPage) {
         int offset = (page - 1) * rowsPerPage;
 
-        // Fuzzy search query for collegeName, and collegeCode
         String query = "SELECT cT.collegeCode, cT.collegeName "
                 + "FROM collegesTable cT "
                 + "WHERE cT.collegeName LIKE ? OR cT.collegeCode LIKE ? "
@@ -319,9 +521,8 @@ public class collegesTable {
         try (PreparedStatement createPreparedStatement = connectionAttempt.prepareStatement(query)) {
             String pattern = "%" + searchText + "%";
 
-            // Bind the search text to each of the four fields
-            createPreparedStatement.setString(1, pattern); // collegeName
-            createPreparedStatement.setString(2, pattern); // collegeCode
+            createPreparedStatement.setString(1, pattern);
+            createPreparedStatement.setString(2, pattern);
 
             try (ResultSet rs = createPreparedStatement.executeQuery()) {
                 while (rs.next()) {

@@ -16,20 +16,25 @@ import functions.studentForm;
  * @author John-Ronan Beira
  */
 public class dashboardFrame extends javax.swing.JFrame {
-    
+
     private static dashboardFrame instance;
+
+    collegesTable collegesTableForm = new collegesTable();
+    programsTable programsTableForm = new programsTable();
+    studentTable studentTableForm = new studentTable();
+    studentForm studentEnrollmentForm = new studentForm();
 
     /**
      * Creates new form dashboardFrame
      */
     public dashboardFrame() {
         instance = this;
-        
+
         initComponents();
         URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
         ImageIcon logo = new ImageIcon(iconUrl);
         setIconImage(logo.getImage());
-        
+
         studentEnrollmentForm.setStudentTableReference(studentTableForm);
         studentTableForm.setStudentFormReference(studentEnrollmentForm);
     }
@@ -43,7 +48,7 @@ public class dashboardFrame extends javax.swing.JFrame {
     public javax.swing.JToggleButton getToggleFormButton() {
         return toggleFormButton;
     }
-    
+
     public javax.swing.JTabbedPane getDashboardTabs() {
         return dashboardTabs;
     }
@@ -52,11 +57,6 @@ public class dashboardFrame extends javax.swing.JFrame {
     public static dashboardFrame getInstance() {
         return instance;
     }
-    
-    collegesTable collegesTableForm = new collegesTable();
-    programsTable programsTableForm = new programsTable();
-    studentTable studentTableForm = new studentTable();
-    studentForm studentEnrollmentForm = new studentForm();
 
     /**
      * This method is called from within the constructor to initialize the form.

@@ -4,8 +4,10 @@
  */
 package functions;
 
+import java.util.List;
 import java.awt.event.ItemEvent;
 import javaForms.templatePaginatedTableForms;
+import javaForms.templateFeedbackModalForms;
 import javaForms.dashboardFrame;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -15,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -35,7 +38,7 @@ public class studentTable {
     Connection connectionAttempt = databaseConnector.getConnection();
     private int currentPage = 1;
     private static final int rowsPerPage = 45;
-    private String searchText = studentTable.getSearchInputField().getText().trim();
+    private String searchText = studentTable.getSearchInputField().getText().strip();
 
     private void startComponents() {
         fillTable();
@@ -99,6 +102,27 @@ public class studentTable {
             sortSettings();
         });
 
+        studentTable.getEditItem().addActionListener(e -> {
+
+            dashboardFrame.getInstance().getDashboardTabs().setSelectedIndex(1);
+            dashboardFrame.getInstance().getToggleFormButton().setSelected(true);
+
+            int selectedRow = studentTable.getTemplateTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+
+                Object idNumberObject = studentTable.getTemplateTable().getValueAt(selectedRow, 0);
+                String idNumber = (String) idNumberObject;
+
+                studentFormReference.studentForm.getIdNumberField().setText(idNumber);
+            }
+
+            studentTable.getTemplateTable().clearSelection();
+            studentTable.getTemplateTable().repaint();
+            studentTable.getTemplateTable().revalidate();
+
+        });
+
         studentTable.getUpdateButton().addActionListener(e -> {
             System.out.println("Update Button is Clicked");
 
@@ -128,6 +152,14 @@ public class studentTable {
             studentTable.getTemplateTable().repaint();
             studentTable.getTemplateTable().revalidate();
 
+        });
+
+        studentTable.getNewItem().addActionListener(e -> {
+            dashboardFrame.getInstance().getDashboardTabs().setSelectedIndex(1);
+            dashboardFrame.getInstance().getToggleFormButton().setSelected(false);
+            studentTable.getTemplateTable().clearSelection();
+            studentTable.getTemplateTable().repaint();
+            studentTable.getTemplateTable().revalidate();
         });
 
         studentTable.getPageSelector().addItemListener((ItemEvent e) -> {
@@ -170,8 +202,164 @@ public class studentTable {
 
             }
         });
+
+        studentTable.getDeleteItem().addActionListener(e -> {
+            showModalDialog();
+        });
+
         return studentTable;
 
+    }
+
+    private void showModalDialog() {
+        int[] selectedRows = studentTable.getTemplateTable().getSelectedRows();
+
+        templateFeedbackModalForms deleteConfirm = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+        List<String> idNumberList = new ArrayList<>();
+        List<String> lastNameList = new ArrayList<>();
+        StringBuilder feedbackMessage = new StringBuilder();
+
+        deleteConfirm.getDeclineButton().addActionListener(e -> {
+
+            deleteConfirm.dispose();
+
+        });
+
+        deleteConfirm.getConfirmButton().addActionListener(e -> {
+
+            deleteConfirm.dispose();
+            deleteOperation(idNumberList);
+
+        });
+
+        if (selectedRows.length != 0) {
+
+            for (int rows : selectedRows) {
+
+                Object idNumberObject = studentTable.getTemplateTable().getValueAt(rows, 0);
+                Object lastNameObject = studentTable.getTemplateTable().getValueAt(rows, 3);
+
+                idNumberList.add(idNumberObject.toString());
+                lastNameList.add(lastNameObject.toString());
+            }
+
+            feedbackMessage.append("You are about to delete the following student(s):\n\n");
+
+            for (String lastName : lastNameList) {
+                feedbackMessage.append("- ").append(lastName).append("\n");
+            }
+
+            deleteConfirm.getFeedbackTextPane().setText(feedbackMessage.toString());
+
+        }
+
+        if (selectedRows.length == 0) {
+
+            deleteConfirm.getFeedbackTextPane().setText("No highlighted student, cannot proceed with the deletion");
+            deleteConfirm.setTitle("Delete Student");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+            deleteConfirm.setVisible(true);
+
+        } else if (selectedRows.length == 1) {
+
+            deleteConfirm.getFeedbackTextPane().setText("You have highlighted a student for deletion. Confirm deleting? " + feedbackMessage);
+            deleteConfirm.setTitle("Delete Student");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+
+            deleteConfirm.setVisible(true);
+        } else if (selectedRows.length >= 2) {
+
+            deleteConfirm.getFeedbackTextPane().setText("You have highlighted multiple students, please double check before deletion. " + feedbackMessage);
+            deleteConfirm.setTitle("Delete Multiple Students");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+            deleteConfirm.setVisible(true);
+
+        }
+
+    }
+
+    private void deleteOperation(List<String> idNumberList) {
+
+        templateFeedbackModalForms deleteFeedback = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+
+        StringBuilder DELETE = new StringBuilder("DELETE FROM studentTable WHERE idNumber IN (");
+
+        for (int i = 0; i < idNumberList.size(); i++) {
+
+            DELETE.append("?");
+
+            if (i < idNumberList.size() - 1) {
+                DELETE.append(",");
+            }
+        }
+
+        DELETE.append(")");
+
+        if (idNumberList.isEmpty()) {
+
+            deleteFeedback.getFeedbackTextPane().setText("Like I said - You. Cannot. Delete. Anything. Empty!");
+            deleteFeedback.setTitle("An Empty Void is about to be deleted");
+
+            deleteFeedback.getConfirmButton().setText("Sorry Boss");
+            deleteFeedback.getDeclineButton().setVisible(false);
+            deleteFeedback.getDeclineButton().requestFocusInWindow();
+
+            deleteFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
+
+            deleteFeedback.getConfirmButton().addActionListener(e -> {
+                deleteFeedback.dispose();
+            });
+
+            deleteFeedback.setVisible(true);
+
+        } else {
+
+            try (PreparedStatement createStatement = connectionAttempt.prepareStatement(DELETE.toString())) {
+
+                for (int i = 0; i < idNumberList.size(); i++) {
+                    createStatement.setString(i + 1, idNumberList.get(i));
+                }
+
+                int rowAffected = createStatement.executeUpdate();
+
+                deleteFeedback.getFeedbackTextPane().setText("Successfully deleted " + rowAffected + " students!");
+                deleteFeedback.setTitle("Operation successful");
+
+                deleteFeedback.getConfirmButton().setText("Noted");
+                deleteFeedback.getDeclineButton().setVisible(false);
+                deleteFeedback.getDeclineButton().requestFocusInWindow();
+
+                deleteFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
+
+                deleteFeedback.getConfirmButton().addActionListener(e -> {
+                    deleteFeedback.dispose();
+                });
+
+                deleteFeedback.setVisible(true);
+
+            } catch (SQLException error) {
+                System.err.println("SQL Error: " + error.getMessage());
+            }
+        }
+        
+        if (!idNumberList.isEmpty()) {
+             refreshTable();
+        }
     }
 
     private void fillTable() {
@@ -186,7 +374,7 @@ public class studentTable {
     }
 
     private templatePaginatedTableForms sortSettings() {
-        searchText = studentTable.getSearchInputField().getText().trim();
+        searchText = studentTable.getSearchInputField().getText().strip();
         if (!searchText.isEmpty()) {
             return studentTable;
         }
@@ -261,7 +449,7 @@ public class studentTable {
 
     private void pageSelectorComboBox() {
 
-        searchText = studentTable.getSearchInputField().getText().trim();
+        searchText = studentTable.getSearchInputField().getText().strip();
         if (searchText.isEmpty()) {
             studentTable.getPageSelector().removeAllItems();
             for (int i = 1; i <= getTotalPages(); i++) {
@@ -302,7 +490,7 @@ public class studentTable {
 
     private int getTotalPages() {
 
-        searchText = studentTable.getSearchInputField().getText().trim();
+        searchText = studentTable.getSearchInputField().getText().strip();
 
         if (!searchText.isEmpty()) {
             // Skip total count if search is active
@@ -317,7 +505,7 @@ public class studentTable {
     }
 
     private int getTotalSearchPages(int rows) {
-        searchText = studentTable.getSearchInputField().getText().trim();
+        searchText = studentTable.getSearchInputField().getText().strip();
 
         if (searchText.isEmpty()) {
             return getTotalPages();
@@ -341,7 +529,7 @@ public class studentTable {
     }
 
     private int searchFieldBar() {
-        searchText = studentTable.getSearchInputField().getText().trim();
+        searchText = studentTable.getSearchInputField().getText().strip();
         if (searchText.isEmpty()) {
             sortSettings();
             pageSelectorComboBox();

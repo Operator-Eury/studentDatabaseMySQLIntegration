@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="3">
-        <file>
-            <url>src/functions/studentTable.java</url>
-            <bookmark id="3">
-                <name/>
-                <line>105</line>
-                <key/>
-            </bookmark>
-        </file>
-    </editor-bookmarks>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="3"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/Main.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/javaForms/templateForms.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/javaForms/templatePaginatedTableForms.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/javaForms/dashboardFrame.java</file>
-            <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/functions/studentTable.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/functions/studentForm.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/javaForms/templateFeedbackModalForms.java</file>
             <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/functions/collegesTable.java</file>
+            <file>file:/C:/Users/John-Ronan%20Beira/Documents/GitHub/studentDatabaseMySQLIntegration/studentDatabaseMySQLIntegration/src/functions/studentTable.java</file>
         </group>
     </open-files>
 </project-private>

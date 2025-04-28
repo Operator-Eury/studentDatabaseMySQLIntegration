@@ -6,15 +6,17 @@ package javaForms;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -34,6 +36,10 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         centerTable();
         setupEscapeKeyToClearSelection(templateTable);
 
+        URL iconUrl = getClass().getResource("/resources/images/tabIcon.png");
+        ImageIcon logo = new ImageIcon(iconUrl);
+        modalMenu.setIconImage(logo.getImage());
+
         editItem.addActionListener(e -> {
 
             System.out.println("Edit action triggered");
@@ -50,40 +56,42 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         templateTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                
-                if (e.isPopupTrigger()) {
-
-                    int selectedRow = templateTable.getSelectedRow();
-                    
-                    if (selectedRow == -1) {
-                    
-                        int row = templateTable.rowAtPoint(e.getPoint());
-                    templateTable.setRowSelectionInterval(row, row);
-                    templateTable.requestFocusInWindow();
-                    }
-                    
-                    contextMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
+                handlePopup(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                
-                if (e.isPopupTrigger()) {
-
-                    int selectedRow = templateTable.getSelectedRow();
-                    
-                    if (selectedRow == -1) {
-                    
-                        int row = templateTable.rowAtPoint(e.getPoint());
-                    templateTable.setRowSelectionInterval(row, row);
-                    templateTable.requestFocusInWindow();
-                    }
-                    
-                    contextMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
+                handlePopup(e);
             }
         });
+    }
+
+    private void handlePopup(MouseEvent event) {
+        if (event.isPopupTrigger()) {
+
+            if (templateTable.getRowCount() == 0) {
+                return;
+            }
+
+            int clickedRow = templateTable.rowAtPoint(event.getPoint());
+
+            if (clickedRow >= 0 && clickedRow < templateTable.getRowCount()) {
+
+                if (templateTable.getSelectedRowCount() == 0) {
+                    templateTable.setRowSelectionInterval(clickedRow, clickedRow);
+                }
+
+            } else {
+
+                if (templateTable.getSelectedRowCount() == 0) {
+                    templateTable.setRowSelectionInterval(0, 0);
+                }
+
+            }
+
+            templateTable.requestFocusInWindow();
+            contextMenu.show(event.getComponent(), event.getX(), event.getY());
+        }
     }
 
     private void setupEscapeKeyToClearSelection(JTable table) {
@@ -193,6 +201,58 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         return searchInputField;
     }
 
+    public javax.swing.JMenuItem getEditItem() {
+        return editItem;
+    }
+
+    public javax.swing.JMenuItem getDeleteItem() {
+        return deleteItem;
+    }
+
+    public javax.swing.JMenuItem getNewItem() {
+        return newItem;
+    }
+
+    public javax.swing.JTextField getItemCode() {
+        return itemCode;
+    }
+
+    public javax.swing.JLabel getItemCodeLabel() {
+        return itemCodeLabel;
+    }
+
+    public javax.swing.JTextField getItemName() {
+        return itemName;
+    }
+
+    public javax.swing.JLabel getItemNameLabel() {
+        return itemNameLabel;
+    }
+
+    public javax.swing.JComboBox getCollegeComboBox() {
+        return collegeComboBox;
+    }
+
+    public javax.swing.JLabel getCollegeCodeComboBoxLabel() {
+        return collegeCodeComboBoxLabel;
+    }
+
+    public javax.swing.JButton getAcceptButton() {
+        return acceptButton;
+    }
+
+    public javax.swing.JButton getDeclineButton() {
+        return declineButton;
+    }
+
+    public javax.swing.JDialog getModalMenu() {
+        return modalMenu;
+    }
+    
+    public javax.swing.JLabel getHeaderLabel() {
+        return headerLabel;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -206,7 +266,28 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         contextMenu = new javax.swing.JPopupMenu();
         deleteItem = new javax.swing.JMenuItem();
         editItem = new javax.swing.JMenuItem();
+        newItem = new javax.swing.JMenuItem();
         modalMenu = new javax.swing.JDialog();
+        formPanel = new javax.swing.JPanel();
+        itemCode = new javax.swing.JTextField();
+        itemName = new javax.swing.JTextField();
+        collegeComboBox = new javax.swing.JComboBox<>();
+        itemCodeLabel = new javax.swing.JLabel();
+        itemNameLabel = new javax.swing.JLabel();
+        collegeCodeComboBoxLabel = new javax.swing.JLabel();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel1 = new javax.swing.JPanel();
+        headerLabel = new javax.swing.JLabel();
+        // Resize the icon before setting it
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/resources/images/dog.png"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(128, 128, Image.SCALE_SMOOTH);
+        ImageIcon resizedIcon = new ImageIcon(scaledImage);
+        buttonPanel = new javax.swing.JPanel();
+        acceptButton = new javax.swing.JButton();
+        declineButton = new javax.swing.JButton();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         operationsPanel = new javax.swing.JPanel();
         sortByOptions = new javax.swing.JLabel();
         groupOptionsComboBox = new javax.swing.JComboBox<>();
@@ -244,16 +325,172 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 0), new java.awt.Dimension(1, 32767));
 
+        contextMenu.setFont(contextMenu.getFont().deriveFont(contextMenu.getFont().getStyle() | java.awt.Font.BOLD));
         contextMenu.setComponentPopupMenu(contextMenu);
         contextMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        deleteItem.setForeground(new java.awt.Color(255, 153, 153));
+        deleteItem.setFont(deleteItem.getFont().deriveFont(deleteItem.getFont().getStyle() | java.awt.Font.BOLD));
+        deleteItem.setForeground(new java.awt.Color(255, 51, 51));
         deleteItem.setText("Delete");
         contextMenu.add(deleteItem);
 
+        editItem.setFont(editItem.getFont().deriveFont(editItem.getFont().getStyle() | java.awt.Font.BOLD));
         editItem.setForeground(new java.awt.Color(0, 180, 255));
         editItem.setText("Edit");
         contextMenu.add(editItem);
+
+        newItem.setFont(newItem.getFont().deriveFont(newItem.getFont().getStyle() | java.awt.Font.BOLD));
+        newItem.setForeground(new java.awt.Color(0, 204, 102));
+        newItem.setText("Enroll");
+        contextMenu.add(newItem);
+
+        modalMenu.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        modalMenu.setIconImage(null);
+        modalMenu.setIconImages(null);
+        modalMenu.setMinimumSize(new java.awt.Dimension(700, 450));
+        modalMenu.setModal(true);
+        modalMenu.setPreferredSize(new java.awt.Dimension(700, 450));
+        modalMenu.setResizable(false);
+        modalMenu.getContentPane().setLayout(new java.awt.GridBagLayout());
+
+        formPanel.setLayout(new java.awt.GridBagLayout());
+
+        itemCode.setColumns(20);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(itemCode, gridBagConstraints);
+
+        itemName.setColumns(20);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(itemName, gridBagConstraints);
+
+        collegeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select College" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(collegeComboBox, gridBagConstraints);
+
+        itemCodeLabel.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(itemCodeLabel, gridBagConstraints);
+
+        itemNameLabel.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(itemNameLabel, gridBagConstraints);
+
+        collegeCodeComboBoxLabel.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(collegeCodeComboBoxLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        formPanel.add(filler5, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.weighty = 0.1;
+        formPanel.add(filler6, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.weighty = 0.1;
+        formPanel.add(filler7, gridBagConstraints);
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        headerLabel.setFont(headerLabel.getFont().deriveFont(headerLabel.getFont().getStyle() | java.awt.Font.BOLD, headerLabel.getFont().getSize()+12));
+        headerLabel.setText("jLabel1");
+        headerLabel.setIcon(resizedIcon);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        jPanel1.add(headerLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        formPanel.add(jPanel1, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 0.1;
+        modalMenu.getContentPane().add(formPanel, gridBagConstraints);
+
+        buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+        acceptButton.setBackground(new java.awt.Color(153, 255, 153));
+        acceptButton.setFont(acceptButton.getFont().deriveFont(acceptButton.getFont().getStyle() | java.awt.Font.BOLD));
+        acceptButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/add.png"))); // NOI18N
+        acceptButton.setText("jButton1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(acceptButton, gridBagConstraints);
+
+        declineButton.setBackground(new java.awt.Color(255, 153, 153));
+        declineButton.setFont(declineButton.getFont().deriveFont(declineButton.getFont().getStyle() | java.awt.Font.BOLD));
+        declineButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/images/delivery-box.png"))); // NOI18N
+        declineButton.setText("jButton2");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(declineButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.ipadx = 5;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(filler4, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.1;
+        modalMenu.getContentPane().add(buttonPanel, gridBagConstraints);
 
         setMinimumSize(new java.awt.Dimension(826, 522));
         setPreferredSize(new java.awt.Dimension(826, 522));
@@ -518,17 +755,33 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JButton acceptButton;
+    protected javax.swing.JPanel buttonPanel;
+    protected javax.swing.JLabel collegeCodeComboBoxLabel;
+    protected javax.swing.JComboBox<String> collegeComboBox;
     protected javax.swing.JPopupMenu contextMenu;
     protected javax.swing.JPanel contextOperationsPanel;
     protected javax.swing.JLabel counterLabel;
     protected javax.swing.JButton createButton;
     protected javax.swing.JLabel currentPageLabel;
+    protected javax.swing.JButton declineButton;
     protected javax.swing.JMenuItem deleteItem;
     protected javax.swing.JMenuItem editItem;
     protected javax.swing.Box.Filler filler1;
     protected javax.swing.Box.Filler filler2;
     protected javax.swing.Box.Filler filler3;
+    protected javax.swing.Box.Filler filler4;
+    protected javax.swing.Box.Filler filler5;
+    protected javax.swing.Box.Filler filler6;
+    protected javax.swing.Box.Filler filler7;
+    protected javax.swing.JPanel formPanel;
     protected javax.swing.JComboBox<String> groupOptionsComboBox;
+    protected javax.swing.JLabel headerLabel;
+    protected javax.swing.JTextField itemCode;
+    protected javax.swing.JLabel itemCodeLabel;
+    protected javax.swing.JTextField itemName;
+    protected javax.swing.JLabel itemNameLabel;
+    protected javax.swing.JPanel jPanel1;
     protected javax.swing.JSeparator jSeparator1;
     protected javax.swing.JSeparator jSeparator13;
     protected javax.swing.JSeparator jSeparator14;
@@ -547,6 +800,7 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.JSeparator jSeparator9;
     protected javax.swing.JPanel jTablePanel;
     protected javax.swing.JDialog modalMenu;
+    protected javax.swing.JMenuItem newItem;
     protected javax.swing.JPanel operationsPanel;
     protected javax.swing.JComboBox<String> pageSelector;
     protected javax.swing.JLabel searchInput;
