@@ -35,10 +35,14 @@ public class programsTable {
     private HashMap<String, String> collegesMap;
 
     private studentTable studentFormReference;
-
-    // Setter for studentFormReference
+    private collegesTable collegeTableReference;
+    
     public void setStudentFormReference(studentTable form) {
         this.studentFormReference = form;
+    }
+    
+    public void setCollegeTableReference (collegesTable form) {
+        this.collegeTableReference = form;
     }
 
     private int startingPage = 1;
@@ -238,7 +242,7 @@ public class programsTable {
         return programsTable;
     }
 
-    private void refreshTable() {
+    public void refreshTable() {
         startingPage = 1;
         startComponents();
     }
@@ -299,6 +303,7 @@ public class programsTable {
             }
             refreshTable();
             studentFormReference.refreshTable();
+            collegeTableReference.refreshTable();
             newFeedback.dispose();
         });
 

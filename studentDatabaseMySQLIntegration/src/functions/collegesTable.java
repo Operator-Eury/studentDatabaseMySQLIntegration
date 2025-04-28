@@ -13,12 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javaForms.templatePaginatedTableForms;
 import javaForms.dashboardFrame;
 import javaForms.templateFeedbackModalForms;
@@ -34,6 +31,17 @@ import mySQLQueries.databaseConnector;
  * @author John-Ronan Beira
  */
 public class collegesTable {
+    
+    private studentTable studentFormReference;
+    private programsTable programTableReference;
+    
+    public void setStudentFormReference(studentTable form) {
+        this.studentFormReference = form;
+    }
+    
+    public void setProgramsTableReference(programsTable form) {
+        this.programTableReference = form;
+    }
 
     private int startingPage = 1;
     private static final int rowsPerPage = 45;
@@ -51,7 +59,7 @@ public class collegesTable {
         collegeTable.getTemplateTable().getTableHeader().repaint();
     }
 
-    private void refreshTable() {
+    public void refreshTable() {
         startingPage = 1;
         startComponents();
     }
@@ -586,6 +594,8 @@ public class collegesTable {
                 collegeTable.getItemName().setText("");
             }
             refreshTable();
+            studentFormReference.refreshTable();
+            programTableReference.refreshTable();
             newFeedback.dispose();
         });
 
