@@ -12,6 +12,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javaForms.templatePaginatedTableForms;
 import javaForms.dashboardFrame;
 import javaForms.templateFeedbackModalForms;
@@ -128,7 +135,20 @@ public class collegesTable {
         });
 
         collegeTable.getUpdateButton().addActionListener(e -> {
+
+            int selectedRow = collegeTable.getTemplateTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+
+                Object collegeCodeObject = collegeTable.getTemplateTable().getValueAt(selectedRow, 0);
+                String collegeCode = (String) collegeCodeObject;
+
+                collegeTable.getItemCode().setText(collegeCode);
+                searchCollegeNameByCode();
+            }
+
             showFormDialog(e);
+
         });
 
         collegeTable.getAcceptButton().addActionListener(e -> {
@@ -144,8 +164,306 @@ public class collegesTable {
 
         });
 
+        collegeTable.getItemCode().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                if (collegeTable.getAcceptButton().getText().equalsIgnoreCase("Update College")) {
+                    searchCollegeNameByCode();
+                }
+
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+                if (collegeTable.getAcceptButton().getText().equalsIgnoreCase("Update College")) {
+                    searchCollegeNameByCode();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+                if (collegeTable.getAcceptButton().getText().equalsIgnoreCase("Update College")) {
+                    searchCollegeNameByCode();
+                }
+
+            }
+        });
+
+        collegeTable.getDeleteItem().addActionListener(e -> {
+            showModalDialog();
+        });
+
+        collegeTable.getNewItem().addActionListener(e -> {
+            showFormDialog(e);
+        });
+
+        collegeTable.getEditItem().addActionListener(e -> {
+
+            int selectedRow = collegeTable.getTemplateTable().getSelectedRow();
+
+            if (selectedRow != -1) {
+
+                Object collegeCodeObject = collegeTable.getTemplateTable().getValueAt(selectedRow, 0);
+                String collegeCode = (String) collegeCodeObject;
+
+                collegeTable.getItemCode().setText(collegeCode);
+                searchCollegeNameByCode();
+            }
+
+            showFormDialog(e);
+        });
+
         return collegeTable;
 
+    }
+
+    private void showModalDialog() {
+
+        int[] selectedRows = collegeTable.getTemplateTable().getSelectedRows();
+
+        templateFeedbackModalForms deleteConfirm = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+        List<String> collegeCodeList = new ArrayList<>();
+        List<String> collegeNameList = new ArrayList<>();
+        StringBuilder feedbackMessage = new StringBuilder();
+
+        deleteConfirm.getDeclineButton().addActionListener(e -> {
+
+            deleteConfirm.dispose();
+
+        });
+
+        deleteConfirm.getConfirmButton().addActionListener(e -> {
+
+            deleteConfirm.dispose();
+            deleteOperation(collegeCodeList);
+
+        });
+
+        if (selectedRows.length != 0) {
+
+            for (int rows : selectedRows) {
+
+                Object collegeCodeObject = collegeTable.getTemplateTable().getValueAt(rows, 0);
+                Object collegeNameObject = collegeTable.getTemplateTable().getValueAt(rows, 1);
+
+                collegeCodeList.add(collegeCodeObject.toString());
+                collegeNameList.add(collegeNameObject.toString());
+            }
+
+            feedbackMessage.append("You are about to delete the following colleges(s):\n\n");
+
+            Map<String, Integer> programCounts = new HashMap<>();
+            Map<String, Integer> studentCounts = new HashMap<>();
+
+            String programCheckSQL = "SELECT COUNT(*) FROM programsTable WHERE collegeCode = ?";
+            String studentCheckSQL = "SELECT COUNT(*) FROM studentTable WHERE collegeCode = ?";
+
+            try (PreparedStatement programStatement = connectionAttempt.prepareStatement(programCheckSQL); PreparedStatement studentStatement = connectionAttempt.prepareStatement(studentCheckSQL)) {
+
+                for (String collegeCode : collegeCodeList) {
+
+                    programStatement.setString(1, collegeCode);
+
+                    ResultSet programCheckResult = programStatement.executeQuery();
+                    programCheckResult.next();
+
+                    int programCount = programCheckResult.getInt(1);
+
+                    programCounts.put(collegeCode, programCount);
+
+                    studentStatement.setString(1, collegeCode);
+
+                    ResultSet studentCheckResult = studentStatement.executeQuery();
+                    studentCheckResult.next();
+
+                    int studentCount = studentCheckResult.getInt(1);
+
+                    studentCounts.put(collegeCode, studentCount);
+
+                }
+
+            } catch (SQLException error) {
+                System.err.println("SQL Error: " + error.getMessage());
+            }
+
+            for (String collegeName : collegeNameList) {
+                feedbackMessage.append("- ").append(collegeName).append("\n");
+            }
+
+            boolean anyDependencies = false;
+
+            for (int i = 0; i < collegeNameList.size(); i++) {
+
+                String collegeName = collegeNameList.get(i);
+                String collegeCode = collegeCodeList.get(i);
+
+                int lengthBeforeAppend = feedbackMessage.length();
+
+                feedbackMessage.append("- ").append(collegeName);
+
+                int programs = programCounts.get(collegeCode);
+                int students = studentCounts.get(collegeCode);
+
+                if (programs > 0 || students > 0) {
+
+                    anyDependencies = true;
+                    feedbackMessage.append(" (");
+
+                    if (programs > 0) {
+
+                        feedbackMessage.append(programs).append(" program(s)");
+
+                        if (students > 0) {
+
+                            feedbackMessage.append(" and ");
+
+                        }
+                    }
+
+                    if (students > 0) {
+
+                        feedbackMessage.append(students).append(" student(s)");
+
+                    }
+
+                    feedbackMessage.append(")");
+                } else {
+
+                    feedbackMessage.setLength(lengthBeforeAppend);
+                    continue;
+
+                }
+
+                feedbackMessage.append("\n");
+            }
+
+            if (anyDependencies) {
+
+                feedbackMessage.append("\nWARNING: Colleges with programs or students cannot be deleted!\n");
+                feedbackMessage.append("Please remove all programs and students first.");
+
+                deleteConfirm.getConfirmButton().setEnabled(false);
+
+            } else {
+
+                feedbackMessage.append("\nThese colleges can be safely deleted.");
+
+            }
+
+            deleteConfirm.getFeedbackTextPane().setText(feedbackMessage.toString());
+
+        }
+
+        if (selectedRows.length == 0) {
+
+            deleteConfirm.getFeedbackTextPane().setText("No highlighted college, cannot proceed with the deletion");
+            deleteConfirm.setTitle("Delete College");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+            deleteConfirm.setVisible(true);
+
+        } else if (selectedRows.length == 1) {
+
+            deleteConfirm.getFeedbackTextPane().setText("You have highlighted a college for deletion. Confirm deleting? " + feedbackMessage);
+            deleteConfirm.setTitle("Delete College");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+
+            deleteConfirm.setVisible(true);
+        } else if (selectedRows.length >= 2) {
+
+            deleteConfirm.getFeedbackTextPane().setText("You have highlighted multiple colleges, please double check before deletion. " + feedbackMessage);
+            deleteConfirm.setTitle("Delete Multiple Colleges");
+
+            deleteConfirm.getConfirmButton().setText("Yes proceed");
+            deleteConfirm.getDeclineButton().setText("I'll double check");
+            deleteConfirm.getDeclineButton().requestFocusInWindow();
+
+            deleteConfirm.setLocationRelativeTo(dashboardFrame.getInstance());
+            deleteConfirm.setVisible(true);
+
+        }
+
+    }
+
+    private void deleteOperation(List<String> collegeCodeList) {
+
+        templateFeedbackModalForms deleteFeedback = new templateFeedbackModalForms(dashboardFrame.getInstance(), true);
+
+        StringBuilder DELETE = new StringBuilder("DELETE FROM collegesTable WHERE collegeCode IN (");
+
+        for (int i = 0; i < collegeCodeList.size(); i++) {
+
+            DELETE.append("?");
+
+            if (i < collegeCodeList.size() - 1) {
+                DELETE.append(",");
+            }
+        }
+
+        DELETE.append(")");
+
+        if (collegeCodeList.isEmpty()) {
+
+            deleteFeedback.getFeedbackTextPane().setText("Like I said - You. Cannot. Delete. Anything. Empty!");
+            deleteFeedback.setTitle("An Empty Void is about to be deleted");
+
+            deleteFeedback.getConfirmButton().setText("Sorry Boss");
+            deleteFeedback.getDeclineButton().setVisible(false);
+            deleteFeedback.getDeclineButton().requestFocusInWindow();
+
+            deleteFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
+
+            deleteFeedback.getConfirmButton().addActionListener(e -> {
+                deleteFeedback.dispose();
+            });
+
+            deleteFeedback.setVisible(true);
+
+        } else {
+
+            try (PreparedStatement createStatement = connectionAttempt.prepareStatement(DELETE.toString())) {
+
+                for (int i = 0; i < collegeCodeList.size(); i++) {
+                    createStatement.setString(i + 1, collegeCodeList.get(i));
+                }
+
+                int rowAffected = createStatement.executeUpdate();
+
+                deleteFeedback.getFeedbackTextPane().setText("Successfully deleted " + rowAffected + " colleges!");
+                deleteFeedback.setTitle("Operation successful");
+
+                deleteFeedback.getConfirmButton().setText("Noted");
+                deleteFeedback.getDeclineButton().setVisible(false);
+                deleteFeedback.getDeclineButton().requestFocusInWindow();
+
+                deleteFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
+
+                deleteFeedback.getConfirmButton().addActionListener(e -> {
+                    deleteFeedback.dispose();
+                });
+
+                deleteFeedback.setVisible(true);
+
+            } catch (SQLException error) {
+                System.err.println("SQL Error: " + error.getMessage());
+            }
+        }
+
+        if (!collegeCodeList.isEmpty()) {
+            refreshTable();
+        }
     }
 
     private void showFormDialog(ActionEvent event) {
@@ -158,7 +476,7 @@ public class collegesTable {
             collegeTable.getModalMenu().dispose();
         });
 
-        if (source == collegeTable.getCreateButton()) {
+        if (source == collegeTable.getCreateButton() || source == collegeTable.getNewItem()) {
 
             collegeTable.getModalMenu().setLocationRelativeTo(dashboardFrame.getInstance());
             collegeTable.getModalMenu().setResizable(false);
@@ -179,7 +497,7 @@ public class collegesTable {
 
         }
 
-        if (source == collegeTable.getUpdateButton()) {
+        if (source == collegeTable.getUpdateButton() || source == collegeTable.getEditItem()) {
             collegeTable.getModalMenu().setLocationRelativeTo(dashboardFrame.getInstance());
             collegeTable.getModalMenu().setResizable(false);
             collegeTable.getModalMenu().setTitle("Updating a College");
@@ -198,6 +516,51 @@ public class collegesTable {
             collegeTable.getModalMenu().setVisible(true);
         }
 
+    }
+
+    private Set<String> getCollegesWithDependencies(List<String> collegeCodes) {
+        Set<String> collegesWithDependencies = new HashSet<>();
+
+        if (collegeCodes.isEmpty()) {
+            return collegesWithDependencies;
+        }
+
+        // Prepare placeholders (?, ?, ?) for SQL IN (...)
+        String placeholders = String.join(",", Collections.nCopies(collegeCodes.size(), "?"));
+
+        String PROGRAM_CHECK = "SELECT DISTINCT collegeCode FROM programsTable WHERE collegeCode IN (" + placeholders + ")";
+        String STUDENT_CHECK = "SELECT DISTINCT collegeCode FROM studentTable WHERE collegeCode IN (" + placeholders + ")";
+
+        try {
+            // Check programsTable
+            try (PreparedStatement programStatement = connectionAttempt.prepareStatement(PROGRAM_CHECK)) {
+                for (int i = 0; i < collegeCodes.size(); i++) {
+                    programStatement.setString(i + 1, collegeCodes.get(i));
+                }
+                try (ResultSet programResult = programStatement.executeQuery()) {
+                    while (programResult.next()) {
+                        collegesWithDependencies.add(programResult.getString("collegeCode"));
+                    }
+                }
+            }
+
+            // Check studentTable
+            try (PreparedStatement studentStatement = connectionAttempt.prepareStatement(STUDENT_CHECK)) {
+                for (int i = 0; i < collegeCodes.size(); i++) {
+                    studentStatement.setString(i + 1, collegeCodes.get(i));
+                }
+                try (ResultSet studentResult = studentStatement.executeQuery()) {
+                    while (studentResult.next()) {
+                        collegesWithDependencies.add(studentResult.getString("collegeCode"));
+                    }
+                }
+            }
+
+        } catch (SQLException error) {
+            System.err.println("SQL Error: " + error.getMessage());
+        }
+
+        return collegesWithDependencies; // Set of collegeCodes that cannot be deleted
     }
 
     private void evaluateForm(String collegeCode, String collegeName, boolean isUpdate) {
@@ -261,10 +624,10 @@ public class collegesTable {
         newFeedback.setLocationRelativeTo(dashboardFrame.getInstance());
 
         newFeedback.getConfirmButton().addActionListener(e -> {
-            if(!hasError) {
-            collegeTable.getModalMenu().dispose();
-            collegeTable.getItemCode().setText("");
-            collegeTable.getItemName().setText("");
+            if (!hasError) {
+                collegeTable.getModalMenu().dispose();
+                collegeTable.getItemCode().setText("");
+                collegeTable.getItemName().setText("");
             }
             refreshTable();
             newFeedback.dispose();
@@ -272,6 +635,10 @@ public class collegesTable {
 
         String INSERTQUERY = "INSERT INTO collegesTable (collegeCode, collegeName)"
                 + " VALUES (?, ?)";
+
+        String UPDATEQUERY = "UPDATE collegesTable "
+                + "SET collegeName = ? "
+                + "WHERE collegeCode = ?";
 
         if (!hasError) {
 
@@ -299,6 +666,32 @@ public class collegesTable {
                 } catch (SQLException error) {
                     System.err.println("SQL Error: " + error.getMessage());
                 }
+
+            } else if (isUpdate == true) {
+
+                try (PreparedStatement createStatement = connectionAttempt.prepareStatement(UPDATEQUERY)) {
+
+                    createStatement.setString(1, collegeName);
+                    createStatement.setString(2, collegeCode);
+
+                    int rowsAffected = createStatement.executeUpdate();
+
+                    if (rowsAffected > 0) {
+
+                        System.out.println("Update Done");
+                        collegeTable.getModalMenu().setTitle("College Updated");
+                        newFeedback.getFeedbackTextPane().setText("College successfully updated!");
+
+                        newFeedback.setVisible(true);
+
+                    } else {
+                        System.err.println("Registration Failed");
+                    }
+
+                } catch (SQLException error) {
+                    System.err.println("SQL Error: " + error.getMessage());
+                }
+
             }
 
         } else if (hasError) {
@@ -320,6 +713,35 @@ public class collegesTable {
             }
         }
 
+    }
+
+    private void searchCollegeNameByCode() {
+
+        String collegeCode = collegeTable.getItemCode().getText().toString().strip();
+
+        String SEARCHQUERY = "SELECT collegeName FROM collegesTable WHERE collegeCode = ?";
+
+        try (PreparedStatement createStatement = connectionAttempt.prepareStatement(SEARCHQUERY)) {
+
+            createStatement.setString(1, collegeCode);
+
+            try (ResultSet createResult = createStatement.executeQuery()) {
+
+                if (createResult.next()) {
+
+                    String collegeName = createResult.getString("collegeName");
+                    System.out.println("College Name: " + collegeName);
+                    collegeTable.getItemName().setText(collegeName);
+
+                } else {
+                    System.out.println("No college found for code: " + collegeCode);
+
+                    collegeTable.getItemName().setText("");
+                }
+            }
+        } catch (SQLException error) {
+            System.err.println("SQL Error: " + error.getMessage());
+        }
     }
 
     private void fillTable() {
@@ -453,9 +875,9 @@ public class collegesTable {
 
         int totalMatches = countSearchResults(searchText);
         collegeTable.setCounterLabel("Colleges Found: " + totalMatches);
-        
+
         int totalPages = getTotalSearchPages(totalMatches);
-        
+
         fetchSearchPage(searchText, startingPage, rowsPerPage);
 
         return totalPages;

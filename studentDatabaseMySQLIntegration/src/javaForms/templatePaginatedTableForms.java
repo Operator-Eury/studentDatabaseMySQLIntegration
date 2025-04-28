@@ -40,16 +40,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         ImageIcon logo = new ImageIcon(iconUrl);
         modalMenu.setIconImage(logo.getImage());
 
-        editItem.addActionListener(e -> {
-
-            System.out.println("Edit action triggered");
-        });
-
-        deleteItem.addActionListener(e -> {
-
-            System.out.println("Delete action triggered");
-        });
-
         contextMenu.add(editItem);
         contextMenu.add(deleteItem);
 
@@ -275,7 +265,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         itemCodeLabel = new javax.swing.JLabel();
         itemNameLabel = new javax.swing.JLabel();
         collegeCodeComboBoxLabel = new javax.swing.JLabel();
-        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         jPanel1 = new javax.swing.JPanel();
@@ -414,15 +403,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
         gridBagConstraints.ipady = 5;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         formPanel.add(collegeCodeComboBoxLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 5;
-        gridBagConstraints.ipady = 5;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        formPanel.add(filler5, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -771,7 +751,6 @@ public class templatePaginatedTableForms extends javax.swing.JPanel {
     protected javax.swing.Box.Filler filler2;
     protected javax.swing.Box.Filler filler3;
     protected javax.swing.Box.Filler filler4;
-    protected javax.swing.Box.Filler filler5;
     protected javax.swing.Box.Filler filler6;
     protected javax.swing.Box.Filler filler7;
     protected javax.swing.JPanel formPanel;
